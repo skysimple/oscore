@@ -1,7 +1,7 @@
 <p>
 <h3>About</h3>
 <a href="<%= request.getContextPath() %>/oscore/">Overview</a><br>
-<%--<a href="http://sourceforge.net/project/showfiles.php?group_id=9890">Download</a><br>--%>
+<a href="http://prdownloads.sourceforge.net/opensymphony/oscore-2.2.1.zip?download">Download 2.2.1</a><br>
 </p>
 
 <p>
