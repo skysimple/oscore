@@ -1,41 +1,50 @@
 <html>
-<head>
-<title>OSCore Utility Classes</title>
-</head>
+	<head>
+		<title>OSCore Utility Classes</title>
+	</head>
 
-<body>
-<p>The following is a brief description of the different utility classes provided
-  by OSCore. Along with each short description is some example Java code that
-  takes advantage of some of the features provided by each utility class. However,
-  we recommend that you read the <a href="api/index.html">JavaDocs</a> to completely
-  discover all the methods and features each class provides.</p>
-<ul>
-  <li><a href="#textutils">TextUtils</a> - useful functions for manipulating Strings.
-    Examples include: extracting primitive types, verifying e-mail addresses,
-    splitting and joining, escaping characters, hyperlinking text, indentation,
-    etc. </li>
-  <li><a href="#xmlutils">XMLUtils</a> - common XML functions such as parsing
-    and printing DOM documents, performing XSL transformations and selecting nodes
-    using XPATH. </li>
-  <li><a href="#ejbutils">EJBUtils</a> - common EJB and JNDI based functions such
-    as looking up and narrowing home interfaces and looking up entity-beans directly.
-  </li>
-  <li><a href="#beanutils">BeanUtils</a> - useful methods for accessing values
-    of objects using reflection.</li>
-  <li><a href="#logger">Logger</a> - a convenience proxy to appropriate logging
-    system (useful for debugging code or reporting errors). </li>
-  <li><a href="#multipart">MultipartException</a> - a special type of Exception
-    designed to be subclassed for holding many child Exceptions. Useful if validation
-    can throw many Exceptions and they all need to be wrapped up into and report
-    (for example). </li>
-  <li><a href="#data">Data</a> - an Object wrapper for binary data. </li>
-  <li><a href="#orderedmap">OrderedMap</a> - a java.util.Map implementation that
-    retains the order items were added in.</li>
-  <li><a href="#DataUtil">DataUtil</a> - a small class that helps convert Objects
-    to their primitive types.</li>
-  <li><a href="#DateUtil">DateUtil</a> - a small class for handling ISO 8601 International
-    Date formats.
-</ul>
+	<body>
+
+		<p>The following is a brief description of the different utility classes 
+		provided by OSCore. Along with each short description is some example 
+		Java code that takes advantage of some of the features provided by each 
+		utility class. However, we recommend that you read the <a 
+		href="api/index.html">JavaDocs</a> to completely discover all the 
+		methods and features each class provides.</p>
+  
+		<ul>
+  			<li><a href="#textutils">TextUtils</a> - useful functions for manipulating Strings.
+    		Examples include: extracting primitive types, verifying e-mail addresses,
+    		splitting and joining, escaping characters, hyperlinking text, indentation,
+    		etc.</li>
+  
+			<li><a href="#xmlutils">XMLUtils</a> - common XML functions such as parsing
+			and printing DOM documents, performing XSL transformations and selecting nodes
+			using XPATH. </li>
+  
+			<li><a href="#ejbutils">EJBUtils</a> - common EJB and JNDI based functions such
+			as looking up and narrowing home interfaces and looking up entity-beans directly.
+			</li>
+
+			<li><a href="#beanutils">BeanUtils</a> - useful methods for accessing values
+			of objects using reflection.</li>
+
+			<li><a href="#multipart">MultipartException</a> - a special type of Exception
+			designed to be subclassed for holding many child Exceptions. Useful if validation
+			can throw many Exceptions and they all need to be wrapped up into and report
+			(for example). </li>
+
+			<li><a href="#data">Data</a> - an Object wrapper for binary data. </li>
+
+			<li><a href="#orderedmap">OrderedMap</a> - a java.util.Map implementation that
+			retains the order items were added in.</li>
+
+			<li><a href="#DataUtil">DataUtil</a> - a small class that helps convert Objects
+			to their primitive types.</li>
+
+			<li><a href="#DateUtil">DateUtil</a> - a small class for handling ISO 8601 International
+			Date formats.
+		</ul>
 <hr>
 <h3>TextUtils<a name="textutils"></a></h3>
 <p>TextUtils provides helpers for common operations on text (mainly Strings and
@@ -145,40 +154,6 @@
    // only.
 
 </pre>
-<h3>Logger<a name="logger"></a></h3>
-<p><i>The Logger class has been deprecated in favor of Jakarta's <a href="http://jakarta.apache.org/commons/logging.html">commons-logging</a>
-  project. </i>The Logger is an easy to use class for logging information of different
-  severities in code (ranging from debugging information to fatal errors). There
-  are many logging APIs that are always evolving... this provides a proxy to a
-  suitable one (Log4J at present).</p>
-<p>The system property <b>logger.provider</b> can specify which logging system
-  you wish to use. The following log providers are currently available:</p>
-<ul>
-  <li>com.opensymphony.provider.log.DefaultlLogProvider</li>
-  <li>com.opensymphony.provider.log.NullLogProvider</li>
-  <li>com.opensymphony.provider.log.FullLogProvider</li>
-  <li>com.opensymphony.provider.log.Log4JProvider</li>
-</ul>
-<p>The following is an example of how you can start your app server with one of
-  these providers: <b><br>
-  java -Dlogger.provider=com.opensymphony.provider.log.FullLogProvider ... </b></p>
-<pre>public class MyClass {</pre>
-<pre> private static final Logger logger = new Logger(MyClass.class);</pre>
-<pre> public void doSomething() {
-   logger.debug(&quot;doing something&quot;);
-   try {
-   someThing();
-   logger.debug(&quot;done something&quot;);
-   }
-   catch (SomeException e) {
-   logger.error(&quot;something went wrong&quot;, e);
-   }
-   }</pre>
-<pre> public void blah(Thingy t) {
-   if (logger.isDebugEnabled()) logger.debug(&quot;thingy is &quot; + t.showMe());
-   ....
-   }</pre>
-<pre>}</pre>
 <h3>DataUtil<a name="DataUtil"></a></h3>
 <p>The DataUtil class offers a few static methods that convert objects that represent
   a primitive in to an actual primitive. If the object passed in is null, a default
