@@ -949,10 +949,6 @@ main:
             }
         }
 
-        if ("http://".equals(urlToDisplay)) {
-            return originalStr;
-        }
-
         return str;
     }
 

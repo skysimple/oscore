@@ -198,6 +198,9 @@ public class TextUtilsTest extends TestCase {
         //nullpointer exception with ampersands
         assertEquals("<a href=\"http://www.abcdef&12=4\">http://www.abcdef&amp;12=4</a>", TextUtils.linkURL("http://www.abcdef&12=4"));
         assertEquals("<a href=\"http://www.abcdef&\">http://www.abcdef&amp;</a>", TextUtils.linkURL("http://www.abcdef&amp;"));
+
+        //problem with the whole string not being linked if the last url is 'http://' - CORE-65
+        assertEquals("<a href=\"http://testUrl\">http://testUrl</a> http:// ", TextUtils.linkURL("http://testUrl http:// "));
     }
 
     public void testNulls() {
