@@ -6,7 +6,8 @@ package com.opensymphony.util;
 
 
 /**
- * DOCUMENT ME!
+ * A class for validating URLs according to RFC 2396.  Used mainly for
+ * finding and linking URLs within text blogs.
  *
  * @author $author$
  * @version $Revision$
