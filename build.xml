@@ -12,10 +12,10 @@
   </path>
 
   <target name="init">
+    <property file="build.properties"/>
     <tstamp>
       <format property="release" pattern="-dMMMyy" locale="en" timezone="GMT"/>
     </tstamp>
-    <property file="build.properties"/>
     <property name="docs" value="docs"/>
     <property name="dist" value="dist"/>
     <property name="build" value="build"/>
