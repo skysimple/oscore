@@ -672,7 +672,7 @@ public class TextUtils {
     public final static String linkEmail(String str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main: 
+main:
         while (true) {
             // get index of '@'...
             int atIndex = str.indexOf('@', lastEndIndex + 1);
@@ -1560,18 +1560,42 @@ main:
     }
 
     private final static boolean isValidEmailChar(char c) {
-        return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')) || (c == '_') || (c == '-') || (c == '.') || ((c >= '0') && (c <= '9')));
+        //RFC 1035 Section 2.3.1 specifies letter, digit, '-' or '.' for domain names.  '_' is assumed as allowed for email addresses
+        return (isAlpha(c) || isDigit(c) || (c == '_') || (c == '-') || (c == '.'));
     }
 
     private final static boolean isValidURLChar(char c) {
-        if (isValidEmailChar(c)) {
-            return true;
-        }
-
-        if ((c == '+') || (c == '?') || (c == '&') || (c == '%') || (c == '/') || (c == '~') || (c == ':') || (c == ';') || (c == '=') || (c == '#') || (c == '_') || (c == '(') || (c == ')') || (c == ',') || (c == '!') || (c == '$') || (c == '@')) {
-            return true;
-        }
-
-        return false;
+        // <'> is not a valid URL char for our purposes, even though the RFC allows it
+        return c != '\'' && (isAlpha(c) || isDigit(c) || isAcceptableReservedChar(c) || isUnreservedChar(c) || isOtherChar(c));
     }
+
+    private final static boolean isAlpha(char c) {
+        return ((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'));
+    }
+
+    private final static boolean isDigit(char c) {
+        return ((c >= '0') && (c <= '9'));
+    }
+
+    /**
+     * Acceptable characters in a URI, but are reserved according to RFC 2396 Section 2.2
+     */
+    private final static boolean isAcceptableReservedChar(char c) {
+        return c == ';' || c == '/' || c == '?' || c == ':' || c == '@' || c == '&' || c == '=' || c == '+' || c == '$' || c == ',';
+    }
+
+    /**
+     *  Unreserved characters in a URI, according to RFC 2396 Section 2.3
+     */
+    private final static boolean isUnreservedChar(char c) {
+        return c== '-' || c == '_' || c == '.' || c == '!' || c == '~' || c == '*' || c == '\'' || c == '(' || c == ')';
+    }
+
+    /**
+     * Other characters which are 'delims' according to RFC 2396 Section 2.4.3, but we include them anyhow
+     */
+    private final static boolean isOtherChar(char c) {
+        return c == '#' || c == '%';
+    }
+
 }
