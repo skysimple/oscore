@@ -6,9 +6,6 @@ package com.opensymphony.util;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,10 +20,6 @@ import java.net.URL;
  * Created May 8, 2003 3:35:46 PM
  */
 public class FileManagerTest extends TestCase {
-    //~ Static fields/initializers /////////////////////////////////////////////
-
-    public static final Log LOG = LogFactory.getLog(FileManagerTest.class);
-
     //~ Instance fields ////////////////////////////////////////////////////////
 
     private boolean wasReloading;
