@@ -73,6 +73,7 @@ import java.util.*;
  * @author <a href="mailto:mcannon@internet.com">Mike Cannon-Brookes</a>
  * @author <a href="mailto:hani@fate.demon.co.uk">Hani Suleiman</a>
  * @author <a href="mailto:joeo@adjacency.org">Joseph B. Ottinger</a>
+ * @author <a href="mailto:scott@atlassian.com">Scott Farquhar</a>
  *
  * @version $Revision$
  */
@@ -672,7 +673,7 @@ public class TextUtils {
     public final static String linkEmail(String str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main:
+main: 
         while (true) {
             // get index of '@'...
             int atIndex = str.indexOf('@', lastEndIndex + 1);
@@ -703,7 +704,7 @@ main:
                             continue main;
                         }
 
-                        if (isValidEmailChar(c)) {
+                        if (UrlUtils.isValidEmailChar(c)) {
                             partBeforeAt = c + partBeforeAt;
                         } else {
                             reachedStart = true;
@@ -729,7 +730,7 @@ main:
                     } else {
                         char c = str.charAt(linkEndIndex);
 
-                        if (isValidEmailChar(c)) {
+                        if (UrlUtils.isValidEmailChar(c)) {
                             partAfterAt += c;
                         } else {
                             reachedEnd = true;
@@ -796,7 +797,7 @@ main:
     }
 
     /**
-     * Wrap all urls ('http://', 'https://', 'www.', and 'ftp://') in specified string with href tags.
+     * Wrap all urls ('abc://' and 'www.abc') in specified string with href tags.
      *
      * @param str The block of text to check.
      * @param target The target to use for the href (optional).
@@ -806,55 +807,17 @@ main:
         String originalStr = str;
         String urlToDisplay = null;
 
-        int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char
+        int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
 
-        //of the last URL found.
         String targetString = ((target == null) || (target.trim().length() == 0)) ? "" : (" target=\"" + target.trim() + "\"");
 
         while (true) {
-            //We find the positions of the next occurrence of 'http://', 'https://', 'www.' and 'ftp://'
-            //strings.  We take the nearest occurrence (ie. smallest of the 3 values) and convert
-            //that to hyperlink. We then repeat the process, starting from the end of that hyperlink...
-            String lowerCaseString = str.toLowerCase();
-            int httpIndex = lowerCaseString.indexOf("http://", lastEndIndex + 1);
-            int httpsIndex = lowerCaseString.indexOf("https://", lastEndIndex + 1);
-            int wwwIndex = lowerCaseString.indexOf("www.", lastEndIndex + 1);
-            int ftpIndex = lowerCaseString.indexOf("ftp://", lastEndIndex + 1);
+            int linkStartIndex = getStartUrl(str, lastEndIndex);
 
-            if ((httpIndex == -1) && (httpsIndex == -1) && (wwwIndex == -1) && (ftpIndex == -1)) {
+            //if no more links found - then end the loop
+            if (linkStartIndex == -1) {
                 break;
             } else {
-                //Get the index of the nearest occurrence...
-                int tempLinkStartIndex = Math.min(httpIndex, httpsIndex);
-
-                if (tempLinkStartIndex == -1) {
-                    if (httpIndex == -1) {
-                        tempLinkStartIndex = httpsIndex;
-                    } else {
-                        tempLinkStartIndex = httpIndex;
-                    }
-                }
-
-                int tempLinkStartIndex2 = Math.min(tempLinkStartIndex, wwwIndex);
-
-                if (tempLinkStartIndex2 == -1) {
-                    if (tempLinkStartIndex == -1) {
-                        tempLinkStartIndex2 = wwwIndex;
-                    } else {
-                        tempLinkStartIndex2 = tempLinkStartIndex;
-                    }
-                }
-
-                int linkStartIndex = Math.min(tempLinkStartIndex2, ftpIndex);
-
-                if (linkStartIndex == -1) {
-                    if (tempLinkStartIndex2 == -1) {
-                        linkStartIndex = ftpIndex;
-                    } else {
-                        linkStartIndex = tempLinkStartIndex2;
-                    }
-                }
-
                 //Get the whole URL...
                 //We move forward and add each character to the URL string until we encounter
                 //an invalid URL character (we assume that the URL ends there).
@@ -876,7 +839,7 @@ main:
                         }
                     }
 
-                    if (isValidURLChar(str.charAt(linkEndIndex))) {
+                    if (UrlUtils.isValidURLChar(str.charAt(linkEndIndex))) {
                         urlStr += str.charAt(linkEndIndex);
                         linkEndIndex++;
 
@@ -895,7 +858,7 @@ main:
                     String prefix = str.substring(linkStartIndex - 6, linkStartIndex);
 
                     if ("href=\"".equals(prefix)) {
-                        lastEndIndex = linkEndIndex++;
+                        lastEndIndex = linkEndIndex;
 
                         continue;
                     }
@@ -970,7 +933,7 @@ main:
                     urlStr = "http://" + urlStr;
                 }
 
-                if (verifyUrl(urlStr)) {
+                if (UrlUtils.verifyHierachicalURI(urlStr)) {
                     //Construct the hyperlink for the url...
                     String urlLink = "<a href=\"" + urlStr + "\"" + targetString + ">" + urlToDisplay + "</a>";
 
@@ -1559,43 +1522,61 @@ main:
         return ((c == '.') || (c == '!') || (c == ',') || (c == '?'));
     }
 
-    private final static boolean isValidEmailChar(char c) {
-        //RFC 1035 Section 2.3.1 specifies letter, digit, '-' or '.' for domain names.  '_' is assumed as allowed for email addresses
-        return (isAlpha(c) || isDigit(c) || (c == '_') || (c == '-') || (c == '.'));
-    }
+    /**
+     * Get the starting index of a URL (either 'abc://' or 'www.')
+     */
+    private static final int getStartUrl(String str, int startIndex) {
+        int schemeIndex = getSchemeIndex(str, startIndex);
+        final int wwwIndex = str.indexOf("www.", startIndex + 1);
 
-    private final static boolean isValidURLChar(char c) {
-        // <'> is not a valid URL char for our purposes, even though the RFC allows it
-        return c != '\'' && (isAlpha(c) || isDigit(c) || isAcceptableReservedChar(c) || isUnreservedChar(c) || isOtherChar(c));
-    }
+        if ((schemeIndex == -1) && (wwwIndex == -1)) {
+            return -1;
+        } else if (schemeIndex == -1) {
+            return wwwIndex;
+        } else if (wwwIndex == -1) {
+            return schemeIndex;
+        }
 
-    private final static boolean isAlpha(char c) {
-        return ((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'));
-    }
-
-    private final static boolean isDigit(char c) {
-        return ((c >= '0') && (c <= '9'));
+        return Math.min(schemeIndex, wwwIndex);
     }
 
     /**
-     * Acceptable characters in a URI, but are reserved according to RFC 2396 Section 2.2
+     * Given a string, and the index to start looking at, find the index of the start of the scheme. Eg.
+     * <pre>
+     * getSchemeIndex("notes://abc", 0) -> 0
+     * getSchemeIndex("abc notes://abc", 0) -> 4
+     * </pre>
+     * @param str    The string to search for
+     * @param startIndex   Where to start looking at
+     * @return The location the string was found, ot -1 if the string was not found.
      */
-    private final static boolean isAcceptableReservedChar(char c) {
-        return c == ';' || c == '/' || c == '?' || c == ':' || c == '@' || c == '&' || c == '=' || c == '+' || c == '$' || c == ',';
-    }
+    private static int getSchemeIndex(String str, int startIndex) {
+        int schemeIndex = str.indexOf(UrlUtils.SCHEME_URL, startIndex + 1);
 
-    /**
-     *  Unreserved characters in a URI, according to RFC 2396 Section 2.3
-     */
-    private final static boolean isUnreservedChar(char c) {
-        return c== '-' || c == '_' || c == '.' || c == '!' || c == '~' || c == '*' || c == '\'' || c == '(' || c == ')';
-    }
+        //if it was not found, or found at the start of the string, then return 'not found'
+        if (schemeIndex <= 0) {
+            return -1;
+        }
 
-    /**
-     * Other characters which are 'delims' according to RFC 2396 Section 2.4.3, but we include them anyhow
-     */
-    private final static boolean isOtherChar(char c) {
-        return c == '#' || c == '%';
-    }
+        //walk backwards through the scheme until we find the first non valid character
+        int schemeStart;
 
+        for (schemeStart = schemeIndex - 1; schemeStart >= 0; schemeStart--) {
+            char currentChar = str.charAt(schemeStart);
+
+            if (!UrlUtils.isValidSchemeChar(currentChar)) {
+                break;
+            }
+        }
+
+        //reset the scheme to the starting character
+        schemeStart++;
+
+        // we don't want to do this, otherwise an invalid scheme would ruin the linking for later schemes
+        //        if (UrlUtils.isValidScheme(str.substring(schemeStart, schemeIndex)))
+        //            return schemeStart;
+        //        else
+        //            return -1;
+        return schemeStart;
+    }
 }

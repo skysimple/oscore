@@ -170,6 +170,16 @@ public class TextUtilsTest extends TestCase {
 
         String validUrl2 = "Click here for a URL: (<a href=\"http://www.opensymphony.com\">http://www.opensymphony.com?abcer</a>) ";
         assertEquals(validUrl2, TextUtils.linkURL(validUrl2));
+
+        assertEquals("<a href=\"http://a\">http://a</a> abc <a href=\"ftp://b\">ftp://b</a> def <a href=\"http://www.xyz.com\">www.xyz.com</a>", TextUtils.linkURL("http://a abc ftp://b def www.xyz.com")); //multiple URLs test
+        assertEquals("<a href=\"http://www.xyz.com\">www.xyz.com</a> <a href=\"http://a\">http://a</a> abc <a href=\"ftp://b\">ftp://b</a> def ", TextUtils.linkURL("www.xyz.com http://a abc ftp://b def ")); //multiple URLs test
+        assertEquals("<a href=\"http://www.xyz.com\">www.xyz.com</a> 56a://a abc <a href=\"ftp://b\">ftp://b</a> def ", TextUtils.linkURL("www.xyz.com 56a://a abc ftp://b def ")); //multiple URLs test with invalid URL in middle
+        assertEquals("abcdef", TextUtils.linkURL("abcdef")); //No URLs
+
+        //Other schemes - CORE-50
+        _testLinkUrl("notes://www.opensymphony.com");
+        _testLinkUrl("file:///tmp/opensymphony/files");
+        assertEquals("11le:///tmp/opensymphony/files", TextUtils.linkURL("11le:///tmp/opensymphony/files")); //invalid protocol
     }
 
     public void testNulls() {
