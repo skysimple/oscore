@@ -435,7 +435,7 @@ public class TextUtils {
             }
             // encode 'ugly' characters (ie Word "curvy" quotes etc)
             else if (c < '\377') {
-                String hexChars = new String("0123456789ABCDEF");
+                String hexChars = "0123456789ABCDEF";
                 int a = c % 16;
                 int b = (c - a) / 16;
                 String hex = "" + hexChars.charAt(b) + hexChars.charAt(a);
@@ -673,7 +673,7 @@ public class TextUtils {
     public final static String linkEmail(String str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main: 
+main:
         while (true) {
             // get index of '@'...
             int atIndex = str.indexOf('@', lastEndIndex + 1);
