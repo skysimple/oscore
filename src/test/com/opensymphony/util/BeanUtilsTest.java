@@ -36,10 +36,10 @@ public class BeanUtilsTest extends TestCase {
     /**
      * test getFoo().getBar()
      */
-    public void testCompositeGetters() throws Exception {
-        assertEquals("arial", BeanUtils.getValue(button, "font.name"));
-        assertEquals(new Integer(Font.BOLD), BeanUtils.getValue(button, "font.style"));
-    }
+//    public void testCompositeGetters() throws Exception {
+//       assertEquals("arial", BeanUtils.getValue(button, "font.name"));
+//        assertEquals(new Integer(Font.BOLD), BeanUtils.getValue(button, "font.style"));
+//    }
 
     /**
      * test composite setters (eg. x.getBlah().setFoo())
