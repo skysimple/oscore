@@ -42,7 +42,12 @@ public class FileManagerTest extends TestCase {
         FileManager.setReloadingConfigs(wasReloading);
     }
 
-    public void testFileChanged() {
+  //TODO Hani commented this out. This test makes assumptions about
+  //the file timestamp resolution on the underlying FS. which just
+  //don't hold true on non-Windows. On OSX this test will always fail,
+  //and on linux it'll fail periodically. Writing to a file is NOT
+  //guaranteed to change its timestamp
+    public void errorTestFileChanged() {
         try {
             File file = getFile();
             String fileName = file.getName();
