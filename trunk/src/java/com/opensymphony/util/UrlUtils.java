@@ -97,8 +97,7 @@ public class UrlUtils {
     }
 
     public final static boolean isValidURLChar(char c) {
-        // <'> is not a valid URL char for our purposes, even though the RFC allows it
-        return (c != '\'') && (isAlpha(c) || isDigit(c) || isAcceptableReservedChar(c) || isUnreservedChar(c) || isOtherChar(c));
+        return isAlpha(c) || isDigit(c) || isAcceptableReservedChar(c) || isUnreservedChar(c) || isOtherChar(c);
     }
 
     /**
