@@ -1,0 +1,8 @@
+tmp
+dist
+build
+*.iws
+*.ipr
+*.iml
+docs
+testcoverage.*
