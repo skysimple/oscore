@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>OSCore Utility Classes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="main.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1>OSCore Utility Classes </h1>
+<p>The following is a brief description of the different utility classes provided
+  by OSCore. Along with each short description is some example Java code that
+  takes advantage of some of the features provided by each utility class. However,
+  we recommend that you read the <a href="api/index.html">JavaDocs</a> to completely
+  discover all the methods and features each class provides.</p>
+<ul>
+  <li><a href="#textutils">TextUtils</a> - useful functions for manipulating Strings.
+    Examples include: extracting primitive types, verifying e-mail addresses,
+    splitting and joining, escaping characters, hyperlinking text, indentation,
+    etc. </li>
+  <li><a href="#xmlutils">XMLUtils</a> - common XML functions such as parsing
+    and printing DOM documents, performing XSL transformations and selecting nodes
+    using XPATH. </li>
+  <li><a href="#ejbutils">EJBUtils</a> - common EJB and JNDI based functions such
+    as looking up and narrowing home interfaces and looking up entity-beans directly.
+  </li>
+  <li><a href="#beanutils">BeanUtils</a> - useful methods for accessing values
+    of objects using reflection.</li>
+  <li><a href="#logger">Logger</a> - a convenience proxy to appropriate logging
+    system (useful for debugging code or reporting errors). </li>
+  <li><a href="#multipart">MultipartException</a> - a special type of Exception
+    designed to be subclassed for holding many child Exceptions. Useful if validation
+    can throw many Exceptions and they all need to be wrapped up into and report
+    (for example). </li>
+  <li><a href="#data">Data</a> - an Object wrapper for binary data. </li>
+  <li><a href="#orderedmap">OrderedMap</a> - a java.util.Map implementation that
+    retains the order items were added in.</li>
+  <li><a href="#DataUtil">DataUtil</a> - a small class that helps convert Objects
+    to their primitive types.</li>
+  <li><a href="#DateUtil">DateUtil</a> - a small class for handling ISO 8601 International
+    Date formats.
+</ul>
+<hr>
+<h3>TextUtils<a name="textutils"></a></h3>
+<p>TextUtils provides helpers for common operations on text (mainly Strings and
+  numbers).</p>
+<pre>int a = TextUtils.parseInt(&quot;1&quot;); // returns 1
+   int b = TextUtils.parseInt(&quot;-45345&quot;); // returns -45345
+   int c = TextUtils.parseInt(&quot;abc&quot;); // returns 0 (instead of throwing    exception)</pre>
+<pre>long d = TextUtils.parseLong(&quot;12345678901234&quot;);
+   float fl = TextUtils.parseFloat(&quot;123.456&quot;);
+   double db = TextUtils.parseDouble(&quot;12345678.901234&quot;);</pre>
+<pre>boolean e = TextUtils.parseBoolean(&quot;yes&quot;); // true
+   boolean f = TextUtils.parseBoolean(&quot;true&quot;); // true
+   boolean g = TextUtils.parseBoolean(&quot;1&quot;); // true
+   boolean h = TextUtils.parseBoolean(&quot;false&quot;); // false
+   boolean i = TextUtils.parseBoolean(&quot;blah&quot;); // false</pre>
+<pre>int p = TextUtils.parseInt( TextUtils.extractNumber(&quot;$1,000,000 only!&quot;)    ); // 1000000</pre>
+<pre>String lower = TextUtils.noNull(myStr).toLowerCase(); // prevent NullPointerException
+   // if myStr is null by returning &quot;&quot;</pre>
+<pre>boolean v1 = TextUtils.verifyEmail(&quot;joe@bloggs.com&quot;); // true
+   boolean v2 = TextUtils.verifyEmail(&quot;a.b-d.c@def.ghi.co.jp&quot;); // true
+   boolean v3 = TextUtils.verifyEmail(&quot;nothing@blah&quot;); // false
+   boolean v4 = TextUtils.verifyEmail(&quot;la la la&quot;); // false</pre>
+<pre>java.awt.Color col = TextUtils.hexToColor(&quot;#ff3300&quot;);
+   String hexCol = TextUtils.colorToHex( col.darker() );</pre>
+<p></p>
+<h3><br>
+  EJBUtils<a name="ejbutils"></a></h3>
+<p>EJBUtils simply provides some shortcuts for common EJB/JNDI operations (namely
+  looking up JNDI bound objects and narrowing them).</p>
+<pre>// standard method
+   Context ctx = new InitialContext();
+   Object obj = ctx.lookup(&quot;java:comp/env/ejb/MyBean&quot;);
+   MyBeanHome myBeanHome = (MyBeanHome)PortableRemoteObject.narrow( obj, MyBeanHome.class    );</pre>
+<pre>// shortcut
+   MyBeanHome myBeanHome = (MyBeanHome) EJBUtils.lookup(&quot;ejb/MyBean&quot;,    MyBeanHome.class);</pre>
+<h3>XMLUtils<a name="xmlutils"></a></h3>
+<p>XMLUtils provides common operations for parsing, printing, navigating, manipulating
+  and transforming XML data. XMLUtils acts a wrapper to JAXP providers.</p>
+<pre>Document doc1 = XMLUtils.parse( new File(&quot;blah.xml&quot;) ); // parse    from file
+   Document doc2 = XMLUtils.parse( new URL(&quot;http://blah.com/blah.xml&quot;)    ); // parse from URL
+   Document doc3 = XMLUtils.parse( myReader ); // parse from Reader
+   ..... // and so on...</pre>
+<pre>// parse XML directly from String
+   Document doc = XMLUtils.parse( &quot;&lt;test name='blah'&gt;&lt;nodes&gt;&lt;x&gt;hello&lt;/x&gt;&lt;x&gt;world&lt;/x&gt;&lt;/nodes&gt;&lt;/test&gt;&quot;    );</pre>
+<pre>// retrieve first &lt;x&gt; node
+   Element xTag = (Element)XMLUtils.xpath( doc, &quot;/test/nodes/x&quot; );</pre>
+<pre>// get contents of &lt;x&gt; tag ('hello')
+   String hello = XMLUtils.getElementText( xTag );</pre>
+<pre>// return all &lt;x&gt; tags
+   NodeList xTags = XMLUtils.xpathList( doc, &quot;/test/nodes/x&quot; );</pre>
+<pre>// create new document with root tag of &lt;mydoc name='blah'&gt;
+   Document newDoc = XMLUtils.newDocument(&quot;mydoc&quot;);
+   newDoc.getDocumentElement().setAttribute(&quot;name&quot;,&quot;blah&quot;);</pre>
+<pre>// pretty-print DOM document into String
+   String final = XMLUtils.print(newDoc);</pre>
+<pre>// perform XSL transformation, caching the compiled XSL
+   XMLUtils.transform( new FileReader(&quot;input.xml&quot;),
+   new FileReader(&quot;input.xsl&quot;),
+   new FileWriter(&quot;output.html&quot;) );</pre>
+<pre>// clone the contents of xTag into a brand new document
+   Document anotherDoc = XMLUtils.newDocument();
+   XMLUtils.cloneNode( xTag, anotherDoc, true );</pre>
+<h3>BeanUtils<a name="beanutils"></a></h3>
+<p>BeanUtils provides a simple interface to accessing properties of an object.
+  It is particularly useful for developing JSP Tags that need to read/write bean
+  values.</p>
+<pre>//// setup fictional Person object for example</pre>
+<pre>Person person = new Person();
+   person.setName(&quot;Bob&quot;);
+   person.setEmail(&quot;b@ob.com&quot;);
+   person.setAge(43);
+   person.setPassword(&quot;blah&quot;);</pre>
+<pre>// add Address object to person
+   Address address = new Address();
+   address.setNumber(12);
+   address.setStreet(&quot;Bobby Street&quot;);
+   address.setTown(&quot;Bobsville&quot;);
+   address.setCountry(&quot;US&quot;);
+   person.setAddress(address);</pre>
+<pre>// add Child objects to Collection
+   person.getChildren().add( new Child(&quot;Jane&quot; );
+   person.getChildren().add( new Child(&quot;Bob Jnr&quot; );</pre>
+<pre>//// end of example setup</pre>
+<pre>// access simple properties
+   String name = (String) BeanUtils.getValue( person, &quot;name&quot; ); // returns    &quot;Bob&quot;
+   String email = (String) BeanUtils.getValue( person, &quot;email&quot; ); //    returns &quot;b@ob.com&quot;
+   Address addr = (Address) BeanUtils.getValue( person, &quot;address&quot; );    // returns Address object
+   Integer age = (Integer) BeanUtils.getValue( person, &quot;age&quot; ); // returns    43</pre>
+<pre>// access nested properties
+   String town = (String) BeanUtils.getValue( person, &quot;address.town&quot;    ); // returns &quot;Bobsville&quot;
+   Integer number = (Integer) BeanUtils.getValue( person, &quot;address.number&quot;    ); // returns 12</pre>
+<pre>// access Collection (notice how methods and elements in Collections/arrays    can be accessed)
+   Integer childCount = (Integer) BeanUtils.getValue( person, &quot;children.size()&quot;    ); // returns 2
+   Iterator allChildren = (Iterator) BeanUtils.getValue( person, &quot;children.iterator()&quot;    );
+   // returns iteration of all children
+   Child firstChild = (Child) BeanUtils.getValue( person, &quot;children[0]&quot;    ); // returns 'Jane'</pre>
+<pre>// set values
+   BeanUtils.setValue( person, &quot;name&quot;, &quot;Bobby&quot; ); // person.setName(&quot;Bobby&quot;)
+   BeanUtils.setValue( person, &quot;age&quot;, new Integer(44) ); // person.setAge(44)
+   BeanUtils.setValue( person, &quot;address.town&quot;, &quot;Newsville&quot;    );
+   // person.getAddress().setTown(&quot;Newsville&quot;);</pre>
+<pre>// accessing properties in bulk
+   Map personFields = BeanUtils.getValues( person, null ); // return Map containing    name/value
+   // pairs of all properties of person.
+   Map someFields = BeanUtils.getValues( person, {&quot;name&quot;,&quot;email&quot;}    ); // return Map containing name/value
+   // pairs of 'name' and 'email' properties
+   // only.
+
+</pre>
+<h3>Logger<a name="logger"></a></h3>
+<p><i>The Logger class has been deprecated in favor of Jakarta's <a href="http://jakarta.apache.org/commons/logging.html">commons-logging</a> 
+  project. </i>The Logger is an easy to use class for logging information of different 
+  severities in code (ranging from debugging information to fatal errors). There 
+  are many logging APIs that are always evolving... this provides a proxy to a 
+  suitable one (Log4J at present).</p>
+<p>The system property <b>logger.provider</b> can specify which logging system
+  you wish to use. The following log providers are currently available:</p>
+<ul>
+  <li>com.opensymphony.provider.log.DefaultlLogProvider</li>
+  <li>com.opensymphony.provider.log.NullLogProvider</li>
+  <li>com.opensymphony.provider.log.FullLogProvider</li>
+  <li>com.opensymphony.provider.log.Log4JProvider</li>
+</ul>
+<p>The following is an example of how you can start your app server with one of
+  these providers: <b><br>
+  java -Dlogger.provider=com.opensymphony.provider.log.FullLogProvider ... </b></p>
+<pre>public class MyClass {</pre>
+<pre> private static final Logger logger = new Logger(MyClass.class);</pre>
+<pre> public void doSomething() {
+   logger.debug(&quot;doing something&quot;);
+   try {
+   someThing();
+   logger.debug(&quot;done something&quot;);
+   }
+   catch (SomeException e) {
+   logger.error(&quot;something went wrong&quot;, e);
+   }
+   }</pre>
+<pre> public void blah(Thingy t) {
+   if (logger.isDebugEnabled()) logger.debug(&quot;thingy is &quot; + t.showMe());
+   ....
+   }</pre>
+<pre>}</pre>
+<h3>DataUtil<a name="DataUtil"></a></h3>
+<p>The DataUtil class offers a few static methods that convert objects that represent
+  a primitive in to an actual primitive. If the object passed in is null, a default
+  primitive value is returned (usually 0).</p>
+<pre>long l = DataUtil.getLong(new Long(10)); // l == 10
+
+int i = DataUtil.getInt(null); // i == 0
+
+</pre>
+<h3>DateUtil<a name="DateUtil"></a></h3>
+	<p>The Internet is a truly International method of communicating - there are no political or cultural
+ 	boundaries drawn on the www page you call up - the page could have been stored in the Smithsonian
+ 	Institute or on a small server in a basement in Ulan Bator, Mongolia. Often, you have no way of telling.
+ 	So, if anyone in the world can read your page, why not ensure that any date references on that page can
+ 	be read correctly and unambiguously by that person, by using the ISO 8601:1988 International Date Format. </p>
+
+ 	<p>The basic format is: <b><i>"CCYYMMDDThhmmsssss&plusmn;nnn"</i></b></p>
+ 	<table border="1"><tr><th colspan="2">Characters used in place of digits or signs</th></tr>
+		<tr><td nowrap>&nbsp;[Y]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>year</b></td></tr>
+		<tr><td>&nbsp;[M]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>month</b></td></tr>
+		<tr><td>&nbsp;[D]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>day</b></td></tr>
+		<tr><td>&nbsp;[T]&nbsp;</td><td>&nbsp;place holder denoting time</td></tr>
+		<tr><td>&nbsp;[h]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>hour</b></td></tr>
+		<tr><td>&nbsp;[m]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>minute</b></td></tr>
+		<tr><td>&nbsp;[s]&nbsp;</td><td>&nbsp;represents a digit used in the time element <b>second</b></td></tr>
+		<tr><td>&nbsp;[n]&nbsp;</td><td>&nbsp;represents digit(s), constituting a positive integer or zero</td></tr>
+		<tr><td>&nbsp;[&plusmn;]&nbsp;</td><td>&nbsp;represents a plus sign [+] if in combination with the following
+		element a positive value or zero needs to be represented, or a minus sign [&shy;] if in combination with the
+		following element a negative value needs to be represented.</td></tr>
+ 	</table>
+ <p>The expanded format includes formating: <b><i>"CCYY-MM-DDThh:mm:ss,sss&plusmn;nnn"</i></b></p>
+</body>
+</html>
