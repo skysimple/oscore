@@ -830,19 +830,10 @@ main:
                     // '&' and will pretty much stuff up an otherwise valid link becos of the ';'.
                     // We therefore have to remove it before proceeding...
                     if (str.charAt(linkEndIndex) == '&') {
-                        if ((linkEndIndex + 5) <= str.length()) {
-                            String all6Chars = str.substring(linkEndIndex, linkEndIndex + 6);
-
-                            if ("&quot;".equals(all6Chars)) {
-                                //this looks like someone has already escaped <">, which is an end char
-                                break;
-                            } else {
-                                String all5Chars = str.substring(linkEndIndex, linkEndIndex + 5);
-
-                                if ("&amp;".equalsIgnoreCase(all5Chars)) {
-                                    str = removeAndInsert(str, linkEndIndex, linkEndIndex + 5, "&");
-                                }
-                            }
+                        if ((linkEndIndex + 6) <= str.length() && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
+                            break;
+                        } else if ((linkEndIndex + 5) <= str.length() && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
+                            str = removeAndInsert(str, linkEndIndex, linkEndIndex + 5, "&");
                         }
                     }
 

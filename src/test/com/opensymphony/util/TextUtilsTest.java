@@ -194,6 +194,10 @@ public class TextUtilsTest extends TestCase {
         _testLinkUrl("notes://www.opensymphony.com");
         _testLinkUrl("file:///tmp/opensymphony/files");
         assertEquals("11le:///tmp/opensymphony/files", TextUtils.linkURL("11le:///tmp/opensymphony/files")); //invalid protocol
+
+        //nullpointer exception with ampersands
+        assertEquals("<a href=\"http://www.abcdef&12=4\">http://www.abcdef&amp;12=4</a>", TextUtils.linkURL("http://www.abcdef&12=4"));
+        assertEquals("<a href=\"http://www.abcdef&\">http://www.abcdef&amp;</a>", TextUtils.linkURL("http://www.abcdef&amp;"));
     }
 
     public void testNulls() {
