@@ -140,6 +140,20 @@ public class TextUtilsTest extends TestCase {
         assertEquals("foo\n&nbsp;bar\n\n", TextUtils.leadingSpaces("foo\n bar\n\n"));
     }
 
+    public void testLinkEmail() {
+        //Email addresses at the start of the text - CORE-52
+        assertEquals("<a href='mailto:admin@opensymphony.com'>admin@opensymphony.com</a>", TextUtils.linkEmail("admin@opensymphony.com"));
+
+        //emails surrounded by characters
+        assertEquals("(<a href='mailto:admin@opensymphony.com'>admin@opensymphony.com</a>)", TextUtils.linkEmail("(admin@opensymphony.com)"));
+        assertEquals("[<a href='mailto:admin@opensymphony.com'>admin@opensymphony.com</a>]", TextUtils.linkEmail("[admin@opensymphony.com]"));
+
+        assertEquals("text <a href='mailto:admin@opensymphony.com'>admin@opensymphony.com</a>", TextUtils.linkEmail("text admin@opensymphony.com"));
+
+        //don't link emails inside URLs
+        //        assertEquals("text http://admin@opensymphony:abc.com", TextUtils.linkEmail("text http://admin@opensymphony:abc.com"));
+    }
+
     public void testLinkURL() {
         //email in url test CORE-47
         assertEquals("<a href=\"http://www.someserver.com/index.jsp?assignee=test@test.com&version=2\">http://www.someserver.com/index.jsp?assignee=test@test.com&amp;version=2</a>", TextUtils.linkURL("http://www.someserver.com/index.jsp?assignee=test@test.com&version=2"));
