@@ -4,10 +4,8 @@
  */
 package com.opensymphony.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.URL;
@@ -26,7 +24,6 @@ import java.util.Map;
 public class FileManager {
     //~ Static fields/initializers /////////////////////////////////////////////
 
-    private static Log LOG = LogFactory.getLog(FileManager.class);
     private static Map files = Collections.synchronizedMap(new HashMap());
     protected static boolean reloadingConfigs = false;
 
@@ -73,21 +70,21 @@ public class FileManager {
             return null;
         }
 
-        InputStream is = null;
+        InputStream is;
 
         try {
             is = fileUrl.openStream();
 
             if (is == null) {
-                throw new Exception("Could not open file " + fileName);
+                throw new IllegalArgumentException("No file '" + fileName + "' found as a resource");
             }
-        } catch (Exception e) {
-            LOG.error("Caught exception while loading file " + fileName);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("No file '" + fileName + "' found as a resource");
         }
 
         if (isReloadingConfigs()) {
             File file = new File(fileUrl.getFile());
-            long lastModified = 0;
+            long lastModified;
 
             if (!file.exists() || !file.canRead()) {
                 file = null;

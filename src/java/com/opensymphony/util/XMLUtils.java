@@ -9,9 +9,6 @@ import com.opensymphony.provider.ProviderInvocationException;
 import com.opensymphony.provider.XMLPrinterProvider;
 import com.opensymphony.provider.XPathProvider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.w3c.dom.*;
 
 import org.xml.sax.InputSource;
@@ -65,7 +62,6 @@ public class XMLUtils {
 
     private static final XPathProvider xPathProvider;
     private static final XMLPrinterProvider xmlPrinterProvider;
-    private static final Log logger = LogFactory.getLog(XMLUtils.class);
 
     static {
         ProviderFactory factory = ProviderFactory.getInstance();
@@ -113,7 +109,7 @@ public class XMLUtils {
             //DOM level 2 provides this in Document, so once xalan switches to that,
             //we can take out all the below and just call target.importNode(node, deep);
             //For now, we implement based on the javadocs for importNode
-            Node newNode = null;
+            Node newNode;
             int nodeType = node.getNodeType();
 
             switch (nodeType) {
@@ -129,9 +125,7 @@ public class XMLUtils {
 
             case Node.ELEMENT_NODE:
 
-                Element newElement = null;
-                newElement = target.createElement(node.getNodeName());
-
+                Element newElement = target.createElement(node.getNodeName());
                 NamedNodeMap nodeAttr = node.getAttributes();
 
                 if (nodeAttr != null) {
@@ -292,7 +286,7 @@ public class XMLUtils {
     /**
      * Perform XSL transformation.
      */
-    public final static void transform(Reader xml, Reader xsl, Writer result) throws IOException, TransformerException {
+    public final static void transform(Reader xml, Reader xsl, Writer result) throws TransformerException {
         transform(xml, xsl, result, null);
     }
 
@@ -308,7 +302,7 @@ public class XMLUtils {
             } catch (TransformerException te) {
                 throw te;
             } catch (Throwable tw) {
-                logger.error("XPathProvider threw unexpected Exception", e);
+                tw.printStackTrace();
 
                 return null;
             }
@@ -327,7 +321,7 @@ public class XMLUtils {
             } catch (TransformerException te) {
                 throw te;
             } catch (Throwable tw) {
-                logger.error("XPathProvider threw unexpected Exception", e);
+                tw.printStackTrace();
 
                 return null;
             }
@@ -359,12 +353,11 @@ public class XMLUtils {
      * @param result where to put the response
      * @param parameters a map consisting of params for the transformer
      * @param xslkey a key used to refer to the XSL
-     * @throws IOException
      * @throws TransformerException
      */
-    public final static void transform(Reader xml, Reader xsl, Writer result, Map parameters, String xslkey) throws IOException, TransformerException {
+    public final static void transform(Reader xml, Reader xsl, Writer result, Map parameters, String xslkey) throws TransformerException {
         try {
-            Transformer t = null;
+            Transformer t;
 
             if ((null != xslkey) && (xslCache.containsKey(xslkey))) {
                 t = (Transformer) xslCache.get(xslkey);
@@ -424,14 +417,14 @@ public class XMLUtils {
     /**
      * Perform XSL transformation, with params.
      */
-    public final static void transform(Reader xml, Reader xsl, Writer result, Map parameters) throws IOException, TransformerException {
+    public final static void transform(Reader xml, Reader xsl, Writer result, Map parameters) throws TransformerException {
         transform(xml, xsl, result, parameters, xsl.toString());
     }
 
     /**
      * Perform XSL transformation.
      */
-    public final static void transform(InputStream xml, InputStream xsl, OutputStream result) throws IOException, TransformerException {
+    public final static void transform(InputStream xml, InputStream xsl, OutputStream result) throws TransformerException {
         transform(new InputStreamReader(xml), new InputStreamReader(xsl), new OutputStreamWriter(result));
     }
 
@@ -439,7 +432,7 @@ public class XMLUtils {
      * Perform XSL transformation. XML and XSL supplied in Strings and result returned as String.
      * Note that inputs are actual XML/XSL data, not URIs.
      */
-    public final static String transform(String xml, String xsl) throws IOException, TransformerException {
+    public final static String transform(String xml, String xsl) throws TransformerException {
         StringWriter result = new StringWriter();
         transform(new StringReader(xml), new StringReader(xsl), result);
 
@@ -449,7 +442,7 @@ public class XMLUtils {
     /**
      * Perform XSL transformations using given Documents and return new Document.
      */
-    public final static Document transform(Document xml, Document xsl) throws ParserConfigurationException, IOException, TransformerException {
+    public final static Document transform(Document xml, Document xsl) throws ParserConfigurationException, TransformerException {
         try {
             Document result = newDocument();
             TransformerFactory factory = TransformerFactory.newInstance();
