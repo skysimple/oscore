@@ -37,15 +37,18 @@ public class ClassLoaderUtil {
     * @param callingClass The Class object of the calling object
     */
     public static URL getResource(String resourceName, Class callingClass) {
-        URL url = null;
-        url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
 
         if (url == null) {
             url = ClassLoaderUtil.class.getClassLoader().getResource(resourceName);
         }
 
         if (url == null) {
-            url = callingClass.getClassLoader().getResource(resourceName);
+            ClassLoader cl = callingClass.getClassLoader();
+
+            if (cl != null) {
+                url = cl.getResource(resourceName);
+            }
         }
 
         if ((url == null) && (resourceName != null) && (resourceName.charAt(0) != '/')) {
