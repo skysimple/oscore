@@ -4,6 +4,7 @@
  */
 package com.opensymphony.util;
 
+
 /**
  * DOCUMENT ME!
  *
