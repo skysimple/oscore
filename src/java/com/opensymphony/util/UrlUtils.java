@@ -119,6 +119,12 @@ public class UrlUtils {
             return false;
         }
 
+        //ensure that the URL has at least one character after '://'
+        if (uri.length() < (schemeUrlIndex + SCHEME_URL.length() + 1)) {
+            return false;
+        }
+
+
         for (int i = schemeUrlIndex + SCHEME_URL.length(); i < uri.length();
                 i++) {
             char c = uri.charAt(i);
