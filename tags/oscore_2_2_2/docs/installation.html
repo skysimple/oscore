@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<title>OSCore Installation</title>
+	</head>
+
+	<body>
+
+		<p>There are two different ways to install OSCore: using 
+		<b>oscore.jar</b> as a library in your application or deploying 
+		<b>oscore.jar</b> as an EJB module to an application server.</p>
+  		
+		<h3>Non-EJB Installation</h3>
+		
+		<p>Place <b>oscore.jar</b> and <b>commons-logging.jar</b> (you can 
+		download this jar file <a 
+		href="http://jakarta.apache.org/commons/logging.html">here</a>) in your 
+		application's classpath (for web applications <b>[web-app]/WEB-
+		INF/lib</b>).</p>
+		
+		<h3>EJB Installation</h3>
+		
+			<p>We cannot possible provide installation details for every 
+			application server that OSCore supports natively or otherwise. We 
+			can, however, provide general information that may be useful for 
+			deploying either the EJB module or the example EAR module 
+			included.</p>
+			
+			<p>Note that the SequenceGenerator EJBs need an EJB 2.0 or higher 
+			compliant container.</p>
+			
+			<p>When deployable oscore in one of your existing J2EE applications, 
+			you'll want to add the following to your application.xml file:</p>
+  			
+<pre>
+&lt;module&gt;
+	&lt;ejb&gt;oscore.jar&lt;/ejb&gt;
+&lt;/module&gt;
+</pre>
+
+			<p>If your applications server isn't supported natively by OSCore, 
+			you'll need to create vendor-specific deployment descriptors to 
+			handle non-standard tags such as JNDI names, CMP mappings, and 
+			datasource names. For your convenience, the standard JNDI names and 
+			recommended CMP mappings are listed below:</p>
+		  
+<table width="75%" border="1" align="center">
+	<tr>
+    	<td>Bean</td>
+    	<td>JNDI Name</td>
+    	<td>CMP Mappings</td>
+  	</tr>
+  	<tr>
+	    <td>Sequence</td>
+	    <td>os.Sequence</td>
+    	<td>
+    		<p><b>Table name</b>: OS_SEQUENCE<br>
+        	<b>name</b> -&gt; NAME<br>
+        	<b>actualCount</b> -&gt; VALUE</p>
+		</td>
+  	</tr>
+  	<tr>
+	    <td>SequenceGenerator</td>
+    	<td>os.SequenceGenerator</td>
+    	<td>N/A</td>
+  	</tr>
+</table>
+
+		<p>In general, you can create the neccessary table with the following 
+		SQL entry:</p>
+		
+<pre>CREATE TABLE OS_SEQUENCE (NAME VARCHAR(60) PRIMARY KEY, VALUE NUMERIC);</pre>
+
+		<p>If you do create any vendor-specific deployment descriptors for any 
+		app servers not currently natively supports by OSCore, please email us 
+		the files at <a href="mailto:opensymphony-developers@lists.sourceforge.net">opensymphony-developers@lists.sourceforge.net</a>.</p>
+ 
+	</body>
+</html>
