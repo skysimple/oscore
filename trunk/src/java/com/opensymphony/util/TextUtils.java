@@ -691,11 +691,11 @@ main:
                 while (!reachedStart) {
                     linkStartIndex--;
 
-                    char c = str.charAt(linkStartIndex);
-
                     if (linkStartIndex < 0) {
                         reachedStart = true;
                     } else {
+                        char c = str.charAt(linkStartIndex);
+
                         //if we find these chars in an email, then it's part of a url, so lets leave it alone
                         //Are there any other chars we should abort email checking for??
                         if ((c == '?') || (c == '&') || (c == '=')) {
