@@ -38,15 +38,11 @@ public class FileManagerTest extends TestCase {
         FileManager.setReloadingConfigs(true);
     }
 
-    public void tearDown() {
-        FileManager.setReloadingConfigs(wasReloading);
-    }
-
-  //TODO Hani commented this out. This test makes assumptions about
-  //the file timestamp resolution on the underlying FS. which just
-  //don't hold true on non-Windows. On OSX this test will always fail,
-  //and on linux it'll fail periodically. Writing to a file is NOT
-  //guaranteed to change its timestamp
+    //TODO Hani commented this out. This test makes assumptions about
+    //the file timestamp resolution on the underlying FS. which just
+    //don't hold true on non-Windows. On OSX this test will always fail,
+    //and on linux it'll fail periodically. Writing to a file is NOT
+    //guaranteed to change its timestamp
     public void errorTestFileChanged() {
         try {
             File file = getFile();
@@ -64,6 +60,10 @@ public class FileManagerTest extends TestCase {
             e.printStackTrace();
             fail();
         }
+    }
+
+    public void tearDown() {
+        FileManager.setReloadingConfigs(wasReloading);
     }
 
     public void testFileUnchanged() {
