@@ -48,7 +48,11 @@ public class FileManager {
     public static boolean fileNeedsReloading(String fileName) {
         FileRevision revision = (FileRevision) files.get(fileName);
 
-        if (revision == null) {
+        if ((revision == null) && reloadingConfigs) {
+            // no revision yet and we keep the revision history, so 
+            // the file needs to be loaded for the first time
+            return true;
+        } else if (revision == null) {
             return false;
         }
 
