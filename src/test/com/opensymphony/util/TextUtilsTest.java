@@ -230,6 +230,10 @@ public class TextUtilsTest extends TestCase {
         //Don't link already valid URLs - CORE-44
         //        String validUrl = "<a href=\"http://www.opensymphony.com\">http://www.opensymphony.com</a>";
         //        assertEquals(validUrl, TextUtils.plainTextToHtml(validUrl));
+        //CORE-53 - escaping problems - quotes
+        String input = "<foo rdf:datatype=\"http://abc.com\">12;</foo>";
+        String expectedResult = "&lt;foo rdf:datatype=&quot;<a href=\"http://abc.com\">http://abc.com</a>&quot;&gt;12;&lt;/foo&gt;";
+        assertEquals(expectedResult, TextUtils.plainTextToHtml(input));
     }
 
     public void testVerifyEmail() {
