@@ -74,6 +74,11 @@ import javax.ejb.*;
  *  transaction-type="Container"
  *  schema="Sequence"
  *
+ * @ejb.finder
+ *                 signature="Collection findAll()"
+ *    query="SELECT DISTINCT OBJECT(o) FROM Sequence o"
+ *                 result-type-mapping="Local"
+ *
  * @ejb.pk class="java.lang.String" extends="java.lang.Object"
  * @ejb.interface class="com.opensymphony.module.sequence.Sequence" extends="javax.ejb.EJBLocalObject"
  * @ejb.home class="com.opensymphony.module.sequence.SequenceHome" extends="javax.ejb.EJBLocalHome"
@@ -93,6 +98,7 @@ public abstract class SequenceEJB implements EntityBean {
 
     /**
      * @ejb.persistence column-name="VALUE"
+     * @ejb.interface-method
      */
     public abstract long getActualCount();
 
@@ -100,6 +106,7 @@ public abstract class SequenceEJB implements EntityBean {
 
     /**
      * @ejb.pk-field
+     * @ejb.interface-method
      * @ejb.persistence column-name="NAME"
      */
     public abstract String getName();
