@@ -7,7 +7,7 @@
 <p>
 <h3>Documentation</h3>
 <a href="<%= request.getContextPath() %>/oscore/installation.html">Installation</a><br>
-<a href="<%= request.getContextPath() %>/oscore/utility.html">Database Utility Classes</a><br>
+<a href="<%= request.getContextPath() %>/oscore/utility.html">Utility Classes</a><br>
 <a href="<%= request.getContextPath() %>/oscore/sequence.html">SequenceGenerator</a><br>
 <a href="<%= request.getContextPath() %>/oscore/api/">API Reference</a><br>
 </p>
