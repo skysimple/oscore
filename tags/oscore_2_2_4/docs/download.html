@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<title>OSCore Downloads</title>
+	</head>
+	
+	<body>
+        <h3>Released Versions</h3>
+
+        <p>The following versions of OSCore are currently available.</p>
+        
+        <ul>
+            <li>OSCore 2.2.2 - <a href="https://oscore.dev.java.net/files/documents/725/2634/oscore-2.2.2.jar">jar file only</a> | <a href="https://oscore.dev.java.net/files/documents/725/2635/oscore-2.2.2.zip">full zip</a> -  January 19th, 2004</li>
+          	<li>OSCore 2.2.1 - <a href="http://prdownloads.sourceforge.net/opensymphony/oscore-2.2.1.zip?download">full zip</a></li>
+        </ul>
+        
+        <p>Please see <a href="installation.html">OSCore Installation</a> for installation instructions.</p>
+        
+		<h3>CVS Access</h3>
+
+        <p>The OSCore project is hosted at <a href="http://oscore.dev.java.net">http://oscore.dev.java.net</a>. You can
+        browse the CVS tree <a href="http://oscore.dev.java.net/source/browse/oscore">here</a>. Instructions for checking
+        the code out of CVS are available <a href="http://oscore.dev.java.net/servlets/ProjectSource">here</a>.</p>
+
+        <h3>Building</h3>
+
+        <p>To build OSCore from the sources, you must have the
+        <a href="http://java.sun.com/j2se/downloads.html">Java SDK version 1.3</a> or above,
+        and <a href="http://ant.apache.org/">Jakarta Ant</a> version 1.5 or above.</p>
+
+        <p>To build the OSCore binaries, change to the oscore directory, and type:</p>
+
+        <blockquote><code><b>ant</b></code></blockquote>
+
+        <p>If there are any errors, try clearing your classpath and retry.</p>
+
+    	<p>Upon completion, a directory called <code>dist</code> should have been
+    	created which contains <code>oscore-{version}.jar</code>.</p>
+
+        <p>Other build targets include:</p>
+
+    	<blockquote>
+    		<code><b>ant test</b></code><br>
+    		Executes all unit tests.
+    	</blockquote>
+
+    	<blockquote>
+    		<code><b>ant docs</b></code><br>
+    		Builds the API JavaDoc and copies the documentation (<code>dist/docs/</code>).
+    	</blockquote>
+    </body>
+</html>
