@@ -1,25 +1,23 @@
 <html>
 <head>
 <title>OSCore SequenceGenerator</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="main.css" type="text/css">
 </head>
 
-<body bgcolor="#FFFFFF" text="#000000">
-<p>The SequenceGenerator module is an EJB-only module and provides a standard 
-  way to generate ID values for CMP entity beans, a feature left out from the 
+<body>
+<p>The SequenceGenerator module is an EJB-only module and provides a standard
+  way to generate ID values for CMP entity beans, a feature left out from the
   EJB specification. </p>
-<p>SequenceGenerator is an EJB module that provides a very efficient unique ID 
-  generator. The primary use of this is as auto-incrementing primary-keys in entity 
-  beans, using a high/low algorithm. The following example code shows how one 
+<p>SequenceGenerator is an EJB module that provides a very efficient unique ID
+  generator. The primary use of this is as auto-incrementing primary-keys in entity
+  beans, using a high/low algorithm. The following example code shows how one
   can a new ID in the sequence named &quot;testSequence&quot;:</p>
 <pre>	SequenceGeneratorHome sgh = (SequenceGeneratorHome)EJBUtils.lookup(&quot;ejb/os.SequenceGenerator&quot;);
 	SequenceGenerator sg = sgh.create();
 	long nextId = sg.getCount(&quot;testSequence&quot;);
 </pre>
-<p>We recommend that if you are going to access the SeqenceGenerator from an EJB 
-  or a JSP/Servlet, you place the following ejb-ref in your deployment descriptor. 
-  You'll also want to map this ejb-ref to the jndi-name <b>os.SequenceGenerator</b> 
+<p>We recommend that if you are going to access the SeqenceGenerator from an EJB
+  or a JSP/Servlet, you place the following ejb-ref in your deployment descriptor.
+  You'll also want to map this ejb-ref to the jndi-name <b>os.SequenceGenerator</b>
   using a vendor-specific deployment descriptor:</p>
 <pre>	&lt;ejb-ref&gt;
 		&lt;ejb-ref-name&gt;ejb/os.SequenceGenerator&lt;/ejb-ref-name&gt;
