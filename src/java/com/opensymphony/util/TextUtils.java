@@ -830,9 +830,9 @@ main:
                     // '&' and will pretty much stuff up an otherwise valid link becos of the ';'.
                     // We therefore have to remove it before proceeding...
                     if (str.charAt(linkEndIndex) == '&') {
-                        if ((linkEndIndex + 6) <= str.length() && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
+                        if (((linkEndIndex + 6) <= str.length()) && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
                             break;
-                        } else if ((linkEndIndex + 5) <= str.length() && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
+                        } else if (((linkEndIndex + 5) <= str.length()) && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
                             str = removeAndInsert(str, linkEndIndex, linkEndIndex + 5, "&");
                         }
                     }
