@@ -55,9 +55,6 @@ package com.opensymphony.util;
  * SUCH DAMAGE.
  * ====================================================================
  */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.lang.reflect.*;
 
 import java.rmi.*;
@@ -83,8 +80,6 @@ import javax.rmi.*;
  */
 public class EJBUtils {
     //~ Static fields/initializers /////////////////////////////////////////////
-
-    private static final Log logger = LogFactory.getLog(EJBUtils.class);
 
     /**
      * Method cache for finders.
@@ -147,10 +142,6 @@ public class EJBUtils {
      * @exception javax.ejb.FinderException Rethrown if thrown by finder method.
      */
     public final static EJBObject findEntity(EJBHome home, String id) throws RemoteException, FinderException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("findEntity(" + home + ",'" + id + "') method entered");
-        }
-
         // Use reflection to try and find a suitable findByPrimaryKey method.
         try {
             // Class of implementation of EJBHome
@@ -168,23 +159,13 @@ public class EJBUtils {
             Iterator it = params.iterator();
 
             while (it.hasNext()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("iterate");
-                }
-
                 Object classType = it.next();
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug(classType);
-                }
 
                 // Attempt to invoke and return result from method.
                 try {
                     Method m = null;
 
                     if (!finderMethods.containsKey(homeClass)) {
-                        logger.debug("Method not in cache");
-
                         // first create array containing a single element, which is our class
                         Class[] theClass = new Class[] {
                             (classType instanceof String) ? Class.forName((String) classType) : (Class) classType
@@ -196,17 +177,8 @@ public class EJBUtils {
                         //Cache the method, for performance.
                         finderMethods.put(homeClass, m);
                     } else {
-                        logger.debug("Method in cache");
-
                         //It's in the cache, so use the method from there.
                         m = (Method) finderMethods.get(homeClass);
-                    }
-
-                    if (
-                        // run the find method on the home interface
-                        logger.isDebugEnabled()) {
-                        // run the find method on the home interface
-                        logger.debug("findEntity() attempting " + classType);
                     }
 
                     Object[] args = new Object[] {params.get(classType)}; // these are the params
@@ -214,53 +186,49 @@ public class EJBUtils {
 
                     // If a result is returned, return it.
                     if (result != null) {
-                        logger.debug("Found result");
-
                         return result; // SUCCESS!!
                     } else {
-                        logger.debug("No result found");
                     }
                 } catch (ClassCastException e) {
-                    if (
-                        // The method was invoked but didn't return an instance of EJBObject
-                        logger.isDebugEnabled()) {
-                        // The method was invoked but didn't return an instance of EJBObject
-                        logger.debug(e);
-                    }
+                    //if (
+                    // The method was invoked but didn't return an instance of EJBObject
+                    //logger.isDebugEnabled()) {
+                    // The method was invoked but didn't return an instance of EJBObject
+                    //logger.debug(e);
+                    //}
                 } catch (ClassNotFoundException e) {
-                    if (
-                        // This is never going to happen - it means java.lang.Integer is missing!!
-                        // Carry on anyway and try the next one.
-                        logger.isDebugEnabled()) {
-                        // This is never going to happen - it means java.lang.Integer is missing!!
-                        // Carry on anyway and try the next one.
-                        logger.debug(e);
-                    }
+                    //if (
+                    // This is never going to happen - it means java.lang.Integer is missing!!
+                    // Carry on anyway and try the next one.
+                    //logger.isDebugEnabled()) {
+                    // This is never going to happen - it means java.lang.Integer is missing!!
+                    // Carry on anyway and try the next one.
+                    //logger.debug(e);
+                    //}
                 } catch (NoSuchMethodException e) {
-                    if (
-                        // Missing a findByPrimaryKey for this type - let's try another one.
-                        logger.isDebugEnabled()) {
-                        // Missing a findByPrimaryKey for this type - let's try another one.
-                        logger.debug(e);
-                    }
+                    //if (
+                    // Missing a findByPrimaryKey for this type - let's try another one.
+                    //logger.isDebugEnabled()) {
+                    // Missing a findByPrimaryKey for this type - let's try another one.
+                    //logger.debug(e);
+                    //}
                 } catch (IllegalAccessException e) {
-                    if (
-                        // This findByPrimaryKey is protected/private - let's try another one.
-                        logger.isDebugEnabled()) {
-                        // This findByPrimaryKey is protected/private - let's try another one.
-                        logger.debug(e);
-                    }
+                    //if (
+                    // This findByPrimaryKey is protected/private - let's try another one.
+                    //logger.isDebugEnabled()) {
+                    // This findByPrimaryKey is protected/private - let's try another one.
+                    //logger.debug(e);
+                    //}
                 } catch (InvocationTargetException e) {
                     // Unwrap to find the actual exception
                     Throwable t = e.getTargetException();
 
-                    if (
-                        // Rethrow actual exception if RemoteException or FinderException.
-                        logger.isDebugEnabled()) {
-                        // Rethrow actual exception if RemoteException or FinderException.
-                        logger.debug(e);
-                    }
-
+                    //if (
+                    // Rethrow actual exception if RemoteException or FinderException.
+                    //logger.isDebugEnabled()) {
+                    // Rethrow actual exception if RemoteException or FinderException.
+                    //logger.debug(e);
+                    //}
                     if (t instanceof RemoteException) {
                         throw (RemoteException) t;
                     }
@@ -271,21 +239,20 @@ public class EJBUtils {
                 }
             }
         } catch (NullPointerException e) {
-            if (
-                // home passed across was null. Can't really do anything with that.
-                logger.isDebugEnabled()) {
-                // home passed across was null. Can't really do anything with that.
-                logger.debug(e);
-            }
+            //if (
+            //    // home passed across was null. Can't really do anything with that.
+            //    logger.isDebugEnabled()) {
+            //    // home passed across was null. Can't really do anything with that.
+            //    logger.debug(e);
+            //}
         }
 
-        if (
-            // Nothing was found. Oh well. Worth a try.
-            logger.isDebugEnabled()) {
-            // Nothing was found. Oh well. Worth a try.
-            logger.debug("findEntity() found nothing");
-        }
-
+        //if (
+        //    // Nothing was found. Oh well. Worth a try.
+        //    logger.isDebugEnabled()) {
+        //    // Nothing was found. Oh well. Worth a try.
+        //    logger.debug("findEntity() found nothing");
+        //}
         return null;
     }
 

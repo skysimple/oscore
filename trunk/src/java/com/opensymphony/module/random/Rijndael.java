@@ -57,9 +57,6 @@ package com.opensymphony.module.random;
  */
 import com.opensymphony.module.random.Rijndael_Algorithm;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.security.InvalidKeyException;
 
 
@@ -70,10 +67,6 @@ import java.security.InvalidKeyException;
  * @version $Revision$
  */
 public class Rijndael {
-    //~ Static fields/initializers /////////////////////////////////////////////
-
-    private static final Log log = LogFactory.getLog(Rijndael.class);
-
     //~ Instance fields ////////////////////////////////////////////////////////
 
     private Object sessionKey;
@@ -118,12 +111,14 @@ public class Rijndael {
     }
 
     public void initialize(byte[] key) {
+        byte[] nkey = new byte[keysize >> 3];
+        System.arraycopy(key, 0, nkey, 0, nkey.length);
+
         try {
-            byte[] nkey = new byte[keysize >> 3];
-            System.arraycopy(key, 0, nkey, 0, nkey.length);
             sessionKey = Rijndael_Algorithm.makeKey(nkey);
         } catch (InvalidKeyException e) {
-            log.error("Could not initialize properly", e);
+            //can't happen?
+            e.printStackTrace();
         }
     }
 }

@@ -124,7 +124,6 @@ public class UrlUtils {
             return false;
         }
 
-
         for (int i = schemeUrlIndex + SCHEME_URL.length(); i < uri.length();
                 i++) {
             char c = uri.charAt(i);

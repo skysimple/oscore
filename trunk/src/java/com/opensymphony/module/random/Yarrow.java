@@ -55,14 +55,7 @@ package com.opensymphony.module.random;
  * SUCH DAMAGE.
  * ====================================================================
  */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -87,7 +80,6 @@ import java.util.Random;
 public final class Yarrow extends Random {
     //~ Static fields/initializers /////////////////////////////////////////////
 
-    private static final Log log = LogFactory.getLog(Yarrow.class);
     private static final int Pt = 5;
     private static final int Pg = 10;
     private static String seedfile;
@@ -151,12 +143,9 @@ public final class Yarrow extends Random {
     private Rijndael cipher_ctx;
     private byte[] allZeroString;
     private byte[] counter;
-    private byte[] long_buffer = new byte[8];
     private byte[] output_buffer;
     private byte[] tmp;
     private boolean fast_select;
-    private int block_bytes;
-    private int digestSize;
     private int fast_entropy;
     private int fetch_counter;
     private int output_count;
@@ -244,6 +233,20 @@ public final class Yarrow extends Random {
         return val & parameters[1];
     }
 
+    private synchronized int getBytes(int count) {
+        if ((fetch_counter + count) > output_buffer.length) {
+            fetch_counter = 0;
+            generateOutput();
+
+            return getBytes(count);
+        }
+
+        int rv = fetch_counter;
+        fetch_counter += count;
+
+        return rv;
+    }
+
     private void accept_entropy(long data, EntropySource source, int actualEntropy) {
         MessageDigest pool = (fast_select ? fast_pool : slow_pool);
         pool.update((byte) data);
@@ -303,16 +306,7 @@ public final class Yarrow extends Random {
     private void accumulator_init() throws NoSuchAlgorithmException {
         fast_pool = MessageDigest.getInstance("SHA1");
         slow_pool = MessageDigest.getInstance("SHA1");
-        digestSize = fast_pool.getDigestLength();
         entropySeen = new Hashtable();
-    }
-
-    private final void counterInc() {
-        for (int i = counter.length - 1; i >= 0; i--) {
-            if (++counter[i] != 0) {
-                break;
-            }
-        }
     }
 
     private void consumeBytes(byte[] bytes) {
@@ -334,6 +328,14 @@ public final class Yarrow extends Random {
         consumeBytes(b);
     }
 
+    private void counterInc() {
+        for (int i = counter.length - 1; i >= 0; i--) {
+            if (++counter[i] != 0) {
+                break;
+            }
+        }
+    }
+
     private void entropy_init(String seed) {
         Properties sys = System.getProperties();
         EntropySource startupEntropy = new EntropySource();
@@ -351,31 +353,6 @@ public final class Yarrow extends Random {
 
         acceptEntropy(startupEntropy, System.currentTimeMillis(), 0);
         read_seed(seed);
-    }
-
-    private final void generateOutput() {
-        counterInc();
-        output_buffer = cipher_ctx.encipher(counter);
-
-        if (output_count++ > Pg) {
-            output_count = 0;
-            nextBytes(tmp);
-            rekey(tmp);
-        }
-    }
-
-    private synchronized int getBytes(int count) {
-        if ((fetch_counter + count) > output_buffer.length) {
-            fetch_counter = 0;
-            generateOutput();
-
-            return getBytes(count);
-        }
-
-        int rv = fetch_counter;
-        fetch_counter += count;
-
-        return rv;
     }
 
     private int estimateEntropy(EntropySource source, long newVal) {
@@ -442,6 +419,17 @@ public final class Yarrow extends Random {
         write_seed(seedfile);
     }
 
+    private void generateOutput() {
+        counterInc();
+        output_buffer = cipher_ctx.encipher(counter);
+
+        if (output_count++ > Pg) {
+            output_count = 0;
+            nextBytes(tmp);
+            rekey(tmp);
+        }
+    }
+
     private void generator_init() {
         cipher_ctx = new Rijndael();
         output_buffer = new byte[cipher_ctx.getBlockSize() / 8];
@@ -454,32 +442,27 @@ public final class Yarrow extends Random {
     private void read_seed(String filename) {
         EntropySource seedFile = new EntropySource();
 
+        DataInputStream dis = null;
+
         try {
-            DataInputStream dis = null;
+            dis = new DataInputStream(new FileInputStream(filename));
 
-            try {
-                dis = new DataInputStream(new FileInputStream(filename));
+            for (int i = 0; i < 32; i++) {
+                acceptEntropy(seedFile, dis.readLong(), 64);
+            }
+        } catch (Exception f) {
+            Random rand = new Random();
 
-                for (int i = 0; i < 32; i++) {
-                    acceptEntropy(seedFile, dis.readLong(), 64);
-                }
-            } catch (Exception f) {
+            for (int i = 0; i < 32; i++) {
+                acceptEntropy(seedFile, rand.nextLong(), 64);
+            }
+        } finally {
+            if (dis != null) {
                 try {
-                    Random rand = new Random();
-
-                    for (int i = 0; i < 32; i++) {
-                        acceptEntropy(seedFile, rand.nextLong(), 64);
-                    }
-                } catch (Exception e) {
-                    log.error("PRNG cannot do initial seed");
-                }
-            } finally {
-                if (dis != null) {
                     dis.close();
+                } catch (IOException e) {
                 }
             }
-        } catch (Exception e) {
-            log.error("Could not read seed properly", e);
         }
 
         fast_pool_reseed();
@@ -509,16 +492,26 @@ public final class Yarrow extends Random {
     }
 
     private void write_seed(String filename) {
+        DataOutputStream dos = null;
+
         try {
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename));
+            dos = new DataOutputStream(new FileOutputStream(filename));
 
             for (int i = 0; i < 32; i++) {
                 dos.writeLong(nextLong());
             }
 
-            dos.close();
-        } catch (Exception e) {
-            log.error("Could not write seed");
+            ;
+        } catch (IOException ex) {
+            System.out.println(getClass().getName() + " error writing seed file to " + filename + ": " + ex);
+        } finally {
+            if (dos != null) {
+                try {
+                    dos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
