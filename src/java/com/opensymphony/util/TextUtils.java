@@ -673,7 +673,7 @@ public class TextUtils {
     public final static String linkEmail(String str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main:
+main: 
         while (true) {
             // get index of '@'...
             int atIndex = str.indexOf('@', lastEndIndex + 1);
@@ -832,6 +832,7 @@ main:
                     if (str.charAt(linkEndIndex) == '&') {
                         if ((linkEndIndex + 5) <= str.length()) {
                             String all6Chars = str.substring(linkEndIndex, linkEndIndex + 6);
+
                             if ("&quot;".equals(all6Chars)) {
                                 //this looks like someone has already escaped <">, which is an end char
                                 break;
