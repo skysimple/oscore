@@ -149,10 +149,10 @@
 
 </pre>
 <h3>Logger<a name="logger"></a></h3>
-<p><i>The Logger class has been deprecated in favor of Jakarta's <a href="http://jakarta.apache.org/commons/logging.html">commons-logging</a> 
-  project. </i>The Logger is an easy to use class for logging information of different 
-  severities in code (ranging from debugging information to fatal errors). There 
-  are many logging APIs that are always evolving... this provides a proxy to a 
+<p><i>The Logger class has been deprecated in favor of Jakarta's <a href="http://jakarta.apache.org/commons/logging.html">commons-logging</a>
+  project. </i>The Logger is an easy to use class for logging information of different
+  severities in code (ranging from debugging information to fatal errors). There
+  are many logging APIs that are always evolving... this provides a proxy to a
   suitable one (Log4J at present).</p>
 <p>The system property <b>logger.provider</b> can specify which logging system
   you wish to use. The following log providers are currently available:</p>
@@ -186,9 +186,9 @@
 <p>The DataUtil class offers a few static methods that convert objects that represent
   a primitive in to an actual primitive. If the object passed in is null, a default
   primitive value is returned (usually 0).</p>
-<pre>long l = DataUtil.getLong(new Long(10)); // l == 10
+<pre>long myLong = DataUtil.getLong(new Long(10)); // myLong == 10
 
-int i = DataUtil.getInt(null); // i == 0
+int myInt = DataUtil.getInt(null); // myInt == 0
 
 </pre>
 <h3>DateUtil<a name="DateUtil"></a></h3>
