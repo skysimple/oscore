@@ -9,9 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.InputStream;
-
 import java.net.URL;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +17,9 @@ import java.util.Map;
 
 /**
  * FileManager
+ *
  * @author Jason Carreira
- * Created May 7, 2003 8:44:26 PM
+ *         Created May 7, 2003 8:44:26 PM
  */
 public class FileManager {
     //~ Static fields/initializers /////////////////////////////////////////////
@@ -48,7 +47,7 @@ public class FileManager {
         FileRevision revision = (FileRevision) files.get(fileName);
 
         if (revision == null) {
-            return true;
+            return false;
         }
 
         return revision.getLastModified() < revision.getFile().lastModified();
@@ -56,6 +55,7 @@ public class FileManager {
 
     /**
      * Loads opens the named file and returns the InputStream
+     *
      * @param fileName - the name of the file to open
      * @return an InputStream of the file contents or null
      * @throws IllegalArgumentException if there is no file with the given file name
