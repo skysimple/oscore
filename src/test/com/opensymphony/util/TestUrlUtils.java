@@ -26,6 +26,7 @@ public class TestUrlUtils extends TestCase {
         assertTrue(UrlUtils.verifyHierachicalURI("http://abc"));
         assertTrue(UrlUtils.verifyHierachicalURI("notes://aba"));
         assertTrue(UrlUtils.verifyHierachicalURI("abc123://aba"));
+        assertTrue(UrlUtils.verifyHierachicalURI("http://amos.shop.com/amos/cc/main/catalog/pcd/11373729/ccsyn/66/_x_/New-Balance-Shoes-New-Balance-W763BL---Women's-Clearance-Shoes"));
 
         assertFalse(UrlUtils.verifyHierachicalURI("http://ab{c}a"));
         assertFalse(UrlUtils.verifyHierachicalURI("1otes://aba"));

@@ -903,6 +903,12 @@ main:
                         linkEndIndex--;
                     }
                 }
+                if (lastChar == '\'') {
+                    if ((linkStartIndex > 0) && ('\'' == (str.charAt(linkStartIndex - 1)))) {
+                        urlStr = urlStr.substring(0, urlStr.length() - 1);
+                        linkEndIndex--;
+                    }
+                }
                 //perhaps we ended with '&gt;', '&lt;' or '&quot;'
                 //We need to strip these
                 //ie '&quot;www.opensymphony.com&quot;' => '&quot;<a href="http://www.openymphony.com/">www.opensymphony.com</a>&quot;'
