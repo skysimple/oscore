@@ -123,7 +123,7 @@ public class SequenceGeneratorEJB implements SessionBean {
 
     /**
      * @ejb.interface-method
-     * @ejb.transaction type="RequiresNew"
+     * @ejb.transaction type="Required"
      */
     public long getCount(String sequenceName) {
         try {
