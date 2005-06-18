@@ -39,7 +39,7 @@
 
   <target name="java" depends="ejbdoclet, format">
     <mkdir dir="${build}/java"/>
-    <javac srcdir="src/java" destdir="${build}/java" classpathref="cp" debug="on"/>
+    <javac source="1.3" target="1.3" srcdir="src/java" destdir="${build}/java" classpathref="cp" debug="on"/>
     <copy filtering="no" todir="${build}/java">
       <fileset dir="src/java">
         <exclude name="**/*.java"/>
@@ -179,8 +179,8 @@
       <entitycmp/>
       <!--<session/>-->
       <deploymentdescriptor destdir="${build}/java/META-INF" validatexml="true" description="OpenSymphony SequenceGenerator" displayname="Sequence Module"/>
-      <jboss version="3.0" destdir="${build}/java/META-INF"/>
-      <weblogic version="7.0" destdir="${build}/java/META-INF" datasource="defaultDS" createtables="true"/>
+      <jboss version="4.0" destdir="${build}/java/META-INF"/>
+      <weblogic version="8.1" destdir="${build}/java/META-INF" datasource="jdbc/DefaultDS" createtables="CreateOnly"/>
       <jrun version="4.0" destdir="${build}/java/META-INF"/>
       <orion version="2.0" destdir="${build}/java/META-INF"/>
     </ejbdoclet>

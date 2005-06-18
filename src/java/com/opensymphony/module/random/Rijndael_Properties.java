@@ -55,9 +55,6 @@ package com.opensymphony.module.random;
  * SUCH DAMAGE.
  * ====================================================================
  */
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -167,10 +164,10 @@ public class Rijndael_Properties // implicit no-argument constructor
 
         String key;
         String value;
-        Enumeration enum = properties.propertyNames();
+        Enumeration e = properties.propertyNames();
 
-        while (enum.hasMoreElements()) {
-            key = (String) enum.nextElement();
+        while (e.hasMoreElements()) {
+            key = (String) e.nextElement();
             value = getProperty(key);
             out.println(key + " = " + value);
         }

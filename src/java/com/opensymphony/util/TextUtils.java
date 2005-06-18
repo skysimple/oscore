@@ -673,7 +673,7 @@ public class TextUtils {
     public final static String linkEmail(String str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main:
+main: 
         while (true) {
             // get index of '@'...
             int atIndex = str.indexOf('@', lastEndIndex + 1);
@@ -903,7 +903,6 @@ main:
                         linkEndIndex--;
                     }
                 }
-
                 else if (lastChar == '\'') {
                     if ((linkStartIndex > 0) && ('\'' == (str.charAt(linkStartIndex - 1)))) {
                         urlStr = urlStr.substring(0, urlStr.length() - 1);
