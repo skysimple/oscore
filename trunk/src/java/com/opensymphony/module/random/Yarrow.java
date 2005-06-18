@@ -127,7 +127,7 @@ public final class Yarrow extends Random {
 
     static {
         try {
-            seedfile = new File(new File(System.getProperty("java.io.tmpdir")), "prng.seed").toString();
+            seedfile = new File(new File(System.getProperty("java.io.tmpdir")), "prng.seed." + System.currentTimeMillis()).toString();
         } catch (Throwable t) {
             seedfile = "prng.seed";
         }
@@ -283,9 +283,9 @@ public final class Yarrow extends Random {
                 if (slow_entropy >= (SLOW_THRESHOLD * 2)) {
                     int kc = 0;
 
-                    for (Enumeration enum = entropySeen.keys();
-                            enum.hasMoreElements();) {
-                        Object key = enum.nextElement();
+                    for (Enumeration e = entropySeen.keys();
+                            e.hasMoreElements();) {
+                        Object key = e.nextElement();
                         Integer v = (Integer) entropySeen.get(key);
 
                         if (v.intValue() > SLOW_THRESHOLD) {
@@ -340,8 +340,8 @@ public final class Yarrow extends Random {
         Properties sys = System.getProperties();
         EntropySource startupEntropy = new EntropySource();
 
-        for (Enumeration enum = sys.propertyNames(); enum.hasMoreElements();) {
-            String key = (String) enum.nextElement();
+        for (Enumeration e = sys.propertyNames(); e.hasMoreElements();) {
+            String key = (String) e.nextElement();
             consumeString(key);
             consumeString(sys.getProperty(key));
         }
@@ -486,8 +486,8 @@ public final class Yarrow extends Random {
 
         Integer ZERO = new Integer(0);
 
-        for (Enumeration enum = entropySeen.keys(); enum.hasMoreElements();) {
-            entropySeen.put(enum.nextElement(), ZERO);
+        for (Enumeration e = entropySeen.keys(); e.hasMoreElements();) {
+            entropySeen.put(e.nextElement(), ZERO);
         }
     }
 

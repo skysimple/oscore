@@ -55,8 +55,6 @@ package com.opensymphony.module.random;
  * SUCH DAMAGE.
  * ====================================================================
  */
-import com.opensymphony.module.random.Rijndael_Properties;
-
 import java.io.PrintWriter;
 
 import java.security.InvalidKeyException;
@@ -859,7 +857,7 @@ public final class Rijndael_Algorithm // implicit no-argument constructor
      * Convenience method to expand a user-supplied key material into a
      * session key, assuming Rijndael's default block size (128-bit).
      *
-     * @param key The 128/192/256-bit user-key to use.
+     * @param k The 128/192/256-bit user-key to use.
      * @exception  InvalidKeyException  If the key is invalid.
      */
     public static Object makeKey(byte[] k) throws InvalidKeyException {
@@ -869,7 +867,7 @@ public final class Rijndael_Algorithm // implicit no-argument constructor
     /**
      * Expand a user-supplied key material into a session key.
      *
-     * @param key        The 128/192/256-bit user-key to use.
+     * @param k        The 128/192/256-bit user-key to use.
      * @param blockSize  The block size in bytes of this Rijndael.
      * @exception  InvalidKeyException  If the key is invalid.
      */
