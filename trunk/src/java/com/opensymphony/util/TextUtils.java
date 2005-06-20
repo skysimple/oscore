@@ -902,8 +902,7 @@ main:
                         urlStr = urlStr.substring(0, urlStr.length() - 1);
                         linkEndIndex--;
                     }
-                }
-                else if (lastChar == '\'') {
+                } else if (lastChar == '\'') {
                     if ((linkStartIndex > 0) && ('\'' == (str.charAt(linkStartIndex - 1)))) {
                         urlStr = urlStr.substring(0, urlStr.length() - 1);
                         linkEndIndex--;
