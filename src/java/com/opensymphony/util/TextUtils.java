@@ -392,13 +392,18 @@ public class TextUtils {
         return htmlEncode(s);
     }
 
+    public final static String htmlEncode(String s) {
+        return htmlEncode(s, true);
+    }
+
     /**
      * Escape html entity characters and high characters (eg "curvy" Word quotes).
      * Note this method can also be used to encode XML.
      * @param s the String to escape.
+     * @param encodeSpecialChars if true high characters will be encode other wise not.
      * @return the escaped string
      */
-    public final static String htmlEncode(String s) {
+    public final static String htmlEncode(String s, boolean encodeSpecialChars) {
         s = noNull(s);
 
         StringBuffer str = new StringBuffer();
@@ -434,7 +439,7 @@ public class TextUtils {
                 }
             }
             // encode 'ugly' characters (ie Word "curvy" quotes etc)
-            else if (c < '\377') {
+            else if (encodeSpecialChars && (c < '\377')) {
                 String hexChars = "0123456789ABCDEF";
                 int a = c % 16;
                 int b = (c - a) / 16;
@@ -804,7 +809,6 @@ main:
      * @return String The block of text with all url's placed in href tags.
      */
     public final static String linkURL(String str, String target) {
-        String originalStr = str;
         String urlToDisplay = null;
 
         int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
@@ -1280,6 +1284,14 @@ main:
         return plainTextToHtml(str, null);
     }
 
+    public final static String plainTextToHtml(String str, boolean encodeSpecialChars) {
+        return plainTextToHtml(str, null, encodeSpecialChars);
+    }
+
+    public final static String plainTextToHtml(String str, String target) {
+        return plainTextToHtml(str, target, true);
+    }
+
     /**
      * Converts plain text to html code.
      *
@@ -1291,13 +1303,14 @@ main:
      *
      * @param str - String containing the plain text.
      * @param target - Target for href tags (optional).
+     * @param encodeSpecialChars - if true high characters will be encode other wise not.
      * @return the escaped string
      */
-    public final static String plainTextToHtml(String str, String target) {
+    public final static String plainTextToHtml(String str, String target, boolean encodeSpecialChars) {
         str = noNull(str);
 
         //First, convert all the special chars...
-        str = htmlEncode(str);
+        str = htmlEncode(str, encodeSpecialChars);
 
         //Convert all leading whitespaces
         str = leadingSpaces(str);
