@@ -703,7 +703,7 @@ main:
 
                         //if we find these chars in an email, then it's part of a url, so lets leave it alone
                         //Are there any other chars we should abort email checking for??
-                        if ((c == '?') || (c == '&') || (c == '=')) {
+                        if ((c == '?') || (c == '&') || (c == '=') || (c == '/') || (c == '%')) {
                             lastEndIndex = atIndex + 1;
 
                             continue main;
