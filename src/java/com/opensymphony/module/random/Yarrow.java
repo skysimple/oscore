@@ -127,7 +127,9 @@ public final class Yarrow extends Random {
 
     static {
         try {
-            seedfile = new File(new File(System.getProperty("java.io.tmpdir")), "prng.seed." + System.currentTimeMillis()).toString();
+            File file = new File(new File(System.getProperty("java.io.tmpdir")), "prng.seed." + System.currentTimeMillis());
+            seedfile = file.toString();
+            file.deleteOnExit();
         } catch (Throwable t) {
             seedfile = "prng.seed";
         }
@@ -517,7 +519,7 @@ public final class Yarrow extends Random {
 
     //~ Inner Classes //////////////////////////////////////////////////////////
 
-    public class EntropySource {
+    public static class EntropySource {
         public int lastDelta;
         public int lastDelta2;
         public long lastVal;

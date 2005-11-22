@@ -143,7 +143,7 @@ public class TextUtils {
                 }
             } else // in a tag
              {
-                if (tagName.equals("") && (c == '/')) // start of a close tag
+                if ((tagName.length() == 0) && (c == '/')) // start of a close tag
                  {
                     inOpenTag = false;
                 } else if (inTagName && ((c == ' ') || (c == '>') || (c == '/'))) // end of the tagname or tag
@@ -198,7 +198,7 @@ public class TextUtils {
                     i < ((Integer) openTags.get(openTagName)).intValue();
                     i++) {
                 //System.out.println("appended </ " + openTagName + ">");
-                closedString.append("</" + openTagName + ">");
+                closedString.append("</").append(openTagName).append('>');
             }
         }
 
@@ -233,7 +233,7 @@ public class TextUtils {
 
     /**
      * Decode binary data from String using base64.
-     *
+     * @deprecated use {@link MailUtils#decodeBytes(String)} instead.
      * @see #encodeBytes(byte[])
      */
     public final static byte[] decodeBytes(String str) throws IOException {
@@ -242,11 +242,10 @@ public class TextUtils {
 
     /**
      * Decode Object from a String by decoding with base64 then deserializing.
-     *
      * @see #encodeObject(java.lang.Object)
      */
     public final static Object decodeObject(String str) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bytes = new ByteArrayInputStream(decodeBytes(str));
+        ByteArrayInputStream bytes = new ByteArrayInputStream(MailUtils.decodeBytes(str));
         ObjectInputStream stream = new ObjectInputStream(bytes);
         Object result = stream.readObject();
         stream.close();
@@ -256,7 +255,7 @@ public class TextUtils {
 
     /**
      * Encode binary data into String using base64.
-     *
+     * @deprecated use {@link MailUtils#encodeBytes(byte[])} instead.
      * @see #decodeBytes(java.lang.String)
      */
     public final static String encodeBytes(byte[] data) throws IOException {
@@ -275,7 +274,7 @@ public class TextUtils {
         stream.close();
         bytes.flush();
 
-        return encodeBytes(bytes.toByteArray());
+        return MailUtils.encodeBytes(bytes.toByteArray());
     }
 
     /**
@@ -748,7 +747,7 @@ main:
                 linkEndIndex--;
 
                 //Reassemble the whole email address...
-                String emailStr = partBeforeAt + "@" + partAfterAt;
+                String emailStr = partBeforeAt + '@' + partAfterAt;
 
                 //If the last chars of emailStr is a '.', ':', '-', '/' or '~' then we exclude those chars.
                 //The '.' at the end could be just a fullstop to a sentence and we don't want
@@ -809,11 +808,11 @@ main:
      * @return String The block of text with all url's placed in href tags.
      */
     public final static String linkURL(String str, String target) {
-        String urlToDisplay = null;
+        String urlToDisplay;
 
         int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
 
-        String targetString = ((target == null) || (target.trim().length() == 0)) ? "" : (" target=\"" + target.trim() + "\"");
+        String targetString = ((target == null) || (target.trim().length() == 0)) ? "" : (" target=\"" + target.trim() + '\"');
 
         while (true) {
             int linkStartIndex = getStartUrl(str, lastEndIndex);
@@ -942,7 +941,7 @@ main:
 
                 if (UrlUtils.verifyHierachicalURI(urlStr)) {
                     //Construct the hyperlink for the url...
-                    String urlLink = "<a href=\"" + urlStr + "\"" + targetString + ">" + urlToDisplay + "</a>";
+                    String urlLink = "<a href=\"" + urlStr + '\"' + targetString + '>' + urlToDisplay + "</a>";
 
                     //Remove the original urlStr from str and put urlLink there instead...
                     str = removeAndInsert(str, linkStartIndex, linkEndIndex + 1, urlLink);
@@ -1232,7 +1231,7 @@ main:
      * @see #extractNumber(String)
      */
     public final static int parseInt(String in) {
-        int i = 0;
+        int i;
 
         try {
             i = Integer.parseInt(in);
@@ -1255,7 +1254,7 @@ main:
      * @see #extractNumber(String)
      */
     public final static long parseLong(String in) {
-        long l = 0;
+        long l;
 
         try {
             l = Long.parseLong(in);
@@ -1504,7 +1503,7 @@ main:
         result.append("<p>");
 
         char lastC = 0;
-        char thisC = 0;
+        char thisC;
 
         for (int i = 0; i < s.length(); i++) {
             thisC = s.charAt(i);
