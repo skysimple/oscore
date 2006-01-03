@@ -480,6 +480,7 @@ public class TextUtils {
     public final static String hyperlink(String text, String target) {
         text = noNull(text);
         StringBuffer sb = new StringBuffer((int) (text.length() * 1.1));
+        sb.append(text);
         linkEmail(sb);
         linkURL(sb, target);
 
