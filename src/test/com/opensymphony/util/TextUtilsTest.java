@@ -138,6 +138,8 @@ public class TextUtilsTest extends TestCase {
     public void testLeadingSpaces() {
         assertEquals("&nbsp;&nbsp;foo\n&nbsp;bar\n", TextUtils.leadingSpaces("  foo\n bar\n"));
         assertEquals("foo\n&nbsp;bar\n\n", TextUtils.leadingSpaces("foo\n bar\n\n"));
+        assertEquals("foo bar", TextUtils.leadingSpaces("foo bar"));
+        assertEquals("\n&nbsp;f bar", TextUtils.leadingSpaces("\n f bar"));
     }
 
     public void testLinkEmail() {
@@ -274,6 +276,11 @@ public class TextUtilsTest extends TestCase {
         _testVerifyUrl("http", false);
         _testVerifyUrl("http://abc.com:80", true);
         _testVerifyUrl(null, false);
+    }
+
+    public void testBr() {
+        assertEquals("abc<br/>def", TextUtils.br("abc\ndef"));
+        assertEquals("abc<br/><br/>def", TextUtils.br("abc\n\ndef"));
     }
 
     private boolean _compareDates(Date a, Date b) {

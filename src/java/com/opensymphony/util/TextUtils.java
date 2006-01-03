@@ -638,6 +638,8 @@ public class TextUtils {
             if (justAfterLineBreak) {
                 if (s.charAt(i) == ' ') {
                     str.append("&nbsp;");
+                } else if (s.charAt(i) == '\n') {
+                    str.append(s.charAt(i));
                 } else {
                     str.append(s.charAt(i));
                     justAfterLineBreak = false;
