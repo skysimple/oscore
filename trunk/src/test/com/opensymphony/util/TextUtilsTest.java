@@ -279,8 +279,8 @@ public class TextUtilsTest extends TestCase {
     }
 
     public void testBr() {
-        assertEquals("abc<br/>def", TextUtils.br("abc\ndef"));
-        assertEquals("abc<br/><br/>def", TextUtils.br("abc\n\ndef"));
+        assertEquals("abc<br/>\ndef", TextUtils.br("abc\ndef"));
+        assertEquals("abc<br/>\n<br/>\ndef", TextUtils.br("abc\n\ndef"));
     }
 
     private boolean _compareDates(Date a, Date b) {
