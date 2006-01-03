@@ -681,7 +681,7 @@ public class TextUtils {
         return str.toString();
     }
 
-    public final static String linkEmail(StringBuffer str) {
+    private final static String linkEmail(StringBuffer str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
 main:
@@ -813,6 +813,13 @@ main:
      * @return String The block of text with all url's placed in href tags.
      */
     public final static String linkURL(String str, String target) {
+        StringBuffer sb = new StringBuffer((int) (str.length() * 1.05));
+        sb.append(str);
+        linkURL(sb, target);
+        return sb.toString();
+    }
+
+    private final static void linkURL(StringBuffer str, String target) {
         String urlToDisplay;
 
         int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
@@ -841,7 +848,7 @@ main:
                         if (((linkEndIndex + 6) <= str.length()) && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
                             break;
                         } else if (((linkEndIndex + 5) <= str.length()) && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
-                            str = removeAndInsert(str, linkEndIndex, linkEndIndex + 5, "&");
+                            str.replace(linkEndIndex, linkEndIndex + 5, "&");
                         }
                     }
 
@@ -949,7 +956,7 @@ main:
                     String urlLink = "<a href=\"" + urlStr + '\"' + targetString + '>' + urlToDisplay + "</a>";
 
                     //Remove the original urlStr from str and put urlLink there instead...
-                    str = removeAndInsert(str, linkStartIndex, linkEndIndex + 1, urlLink);
+                    str.replace(linkStartIndex, linkEndIndex + 1, urlLink);
 
                     //Set lastEndIndex to reflect the position of the end of urlLink
                     //within the whole string...
@@ -961,8 +968,6 @@ main:
                 }
             }
         }
-
-        return str;
     }
 
     /**
@@ -1541,7 +1546,7 @@ main:
     /**
      * Get the starting index of a URL (either 'abc://' or 'www.')
      */
-    private static final int getStartUrl(String str, int startIndex) {
+    private static final int getStartUrl(StringBuffer str, int startIndex) {
         int schemeIndex = getSchemeIndex(str, startIndex);
         final int wwwIndex = str.indexOf("www.", startIndex + 1);
 
@@ -1566,7 +1571,7 @@ main:
      * @param startIndex   Where to start looking at
      * @return The location the string was found, ot -1 if the string was not found.
      */
-    private static int getSchemeIndex(String str, int startIndex) {
+    private static int getSchemeIndex(StringBuffer str, int startIndex) {
         int schemeIndex = str.indexOf(UrlUtils.SCHEME_URL, startIndex + 1);
 
         //if it was not found, or found at the start of the string, then return 'not found'
