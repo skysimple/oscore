@@ -671,16 +671,23 @@ public class TextUtils {
 
     /**
      * Wrap all email addresses in specified string with href tags.
-     * @param str The block of text to check.
+     * @param string The block of text to check.
      * @return String The block of text with all email addresses placed in href tags.
      */
-    public final static String linkEmail(String str) {
+    public final static String linkEmail(String string) {
+        StringBuffer str = new StringBuffer((int) (string.length() * 1.05));
+        str.append(string);
+        linkEmail(str);
+        return str.toString();
+    }
+
+    public final static String linkEmail(StringBuffer str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
-main: 
+main:
         while (true) {
             // get index of '@'...
-            int atIndex = str.indexOf('@', lastEndIndex + 1);
+            int atIndex = str.indexOf("@", lastEndIndex + 1);
 
             if (atIndex == -1) {
                 break;
@@ -773,9 +780,7 @@ main:
                     //Take the part of the str before the email address, the part after, and add
                     //the emailLink between those two parts, so that in effect the original email
                     //address is replaced by a hyperlink to it...
-                    String partBeforeEmail = str.substring(0, linkStartIndex);
-                    String partAfterEmail = str.substring(linkEndIndex + 1);
-                    str = partBeforeEmail + emailLink + partAfterEmail;
+                    str.replace(linkStartIndex, linkEndIndex + 1, emailLink);
 
                     //Set lastEndIndex to reflect the position of the end of emailLink
                     //within the whole string...
@@ -788,7 +793,7 @@ main:
             }
         }
 
-        return str;
+        return str.toString();
     }
 
     /**
