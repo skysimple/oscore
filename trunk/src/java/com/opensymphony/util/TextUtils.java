@@ -479,10 +479,11 @@ public class TextUtils {
      */
     public final static String hyperlink(String text, String target) {
         text = noNull(text);
-        text = linkEmail(text);
-        text = linkURL(text, target);
+        StringBuffer sb = new StringBuffer((int) (text.length() * 1.1));
+        linkEmail(sb);
+        linkURL(sb, target);
 
-        return text;
+        return sb.toString();
     }
 
     /**
@@ -683,7 +684,7 @@ public class TextUtils {
         return str.toString();
     }
 
-    private final static String linkEmail(StringBuffer str) {
+    private final static void linkEmail(StringBuffer str) {
         int lastEndIndex = -1; //Store the index position of the end char of last email address found...
 
 main:
@@ -794,8 +795,6 @@ main:
                 }
             }
         }
-
-        return str.toString();
     }
 
     /**
