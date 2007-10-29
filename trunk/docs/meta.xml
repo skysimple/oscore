@@ -59,6 +59,21 @@
                 </download>
             </downloads>
         </release>
+        <release>
+            <version>2.2.6</version>
+            <date>29th October, 2007</date>
+            <jiraId>21340</jiraId>
+            <downloads>
+                <download>
+                    <url></url>
+                    <name>JAR only</name>
+                </download>
+                <download>
+                    <url></url>
+                    <name>Full release</name>
+                </download>
+            </downloads>
+        </release>
     </releases>
 
 </project>
