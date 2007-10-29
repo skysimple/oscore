@@ -1,0 +1,64 @@
+<project>
+    <name>OSCore</name>
+    <jiraId>10002</jiraId>
+    <jiraName>CORE</jiraName>
+    <confluenceName>CORE</confluenceName>
+    <svn>true</svn>
+
+    <forums>
+        <usersId>21</usersId>
+        <devId>22</devId>
+        <cvsId>23</cvsId>
+    </forums>
+
+    <evaluating>
+        <item>
+            <name>Installation</name>
+            <url>installation.html</url>
+        </item>
+    </evaluating>
+
+    <docs>
+        <url>index.html</url>
+        <doesNotUseWiki>true</doesNotUseWiki>
+        <items>
+            <item>
+                <name>Utility Classes</name>
+                <url>utility.html</url>
+            </item>
+            <item>
+                <name>SequenceGenerator</name>
+                <url>sequence.html</url>
+            </item>
+        </items>
+    </docs>
+
+    <owners>
+        <person>
+            <name>Scott Farquhar</name>
+            <email>scott@atlassian.com</email>
+        </person>
+    </owners>
+
+    <developers>
+    </developers>
+
+    <releases>
+        <release>
+            <version>2.2.5</version>
+            <date>29th July, 2005</date>
+            <jiraId>21340</jiraId>
+            <downloads>
+                <download>
+                    <url>https://oscore.dev.java.net/files/documents/725/17893/oscore-2.2.5.jar</url>
+                    <name>JAR only</name>
+                </download>
+                <download>
+                    <url>https://oscore.dev.java.net/files/documents/725/17892/oscore-2.2.5.zip</url>
+                    <name>Full release</name>
+                </download>
+            </downloads>
+        </release>
+    </releases>
+
+</project>
