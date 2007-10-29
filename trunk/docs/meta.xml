@@ -47,7 +47,7 @@
         <release>
             <version>2.2.5</version>
             <date>29th July, 2005</date>
-            <jiraId>21340</jiraId>
+            <jiraId>21350</jiraId>
             <downloads>
                 <download>
                     <url>https://oscore.dev.java.net/files/documents/725/17893/oscore-2.2.5.jar</url>
@@ -62,14 +62,14 @@
         <release>
             <version>2.2.6</version>
             <date>29th October, 2007</date>
-            <jiraId>21340</jiraId>
+            <jiraId>21520</jiraId>
             <downloads>
                 <download>
-                    <url></url>
+                    <url>https://oscore.dev.java.net/files/documents/725/73262/oscore-2.2.6.jar</url>
                     <name>JAR only</name>
                 </download>
                 <download>
-                    <url></url>
+                    <url>https://oscore.dev.java.net/files/documents/725/73260/oscore-2.2.6.zip</url>
                     <name>Full release</name>
                 </download>
             </downloads>
