@@ -1,0 +1,65 @@
+<project name="oscore" default="jar" basedir=".">
+
+    <property name="src.test" location="src/test"/>
+    <property name="src.etc" location="src/etc"/>
+
+    <property name="common.build" value="../opensymphony/common/osbuild.xml"/>
+    <import file="${common.build}"/>
+
+    <path id="jalopy.classpath">
+        <fileset dir="lib/build/jalopy">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
+        <classpath refid="jalopy.classpath"/>
+    </taskdef>
+
+    <target name="clean" depends="common.clean">
+        <delete>
+            <fileset dir="src/java">
+                <include name="**/*PK.java"/>
+                <include name="**/*CMP.java"/>
+                <include name="**/*Home.java"/>
+                <include name="com/opensymphony/module/sequence/SequenceGenerator.java"/>
+                <include name="com/opensymphony/module/sequence/SequenceLocal.java"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="ejbdoclet" depends="init">
+        <taskdef name="ejbdoclet" classname="xdoclet.modules.ejb.EjbDocletTask" classpathref="cp"/>
+
+        <ejbdoclet ejbspec="2.0" verbose="false" destdir="${src.java}">
+            <fileset dir="${src.java}">
+                <include name="**/*EJB.java"/>
+            </fileset>
+            <remoteinterface/>
+            <localinterface/>
+            <homeinterface/>
+            <localhomeinterface/>
+            <!--<valueobject/>-->
+            <!--<entitypk/>-->
+            <entitycmp/>
+            <!--<session/>-->
+            <deploymentdescriptor destdir="${build}/java/META-INF" validatexml="true" description="OpenSymphony SequenceGenerator" displayname="Sequence Module"/>
+            <jboss version="4.0" destdir="${build}/java/META-INF"/>
+            <weblogic version="8.1" destdir="${build}/java/META-INF" datasource="jdbc/DefaultDS" createtables="CreateOnly"/>
+            <jrun version="4.0" destdir="${build}/java/META-INF"/>
+            <orion version="2.0" destdir="${build}/java/META-INF"/>
+        </ejbdoclet>
+    </target>
+
+    <target name="precompile" depends="ejbdoclet">
+        <jalopy fileformat="unix" convention="src/etc/jalopy.xml" history="file" historymethod="adler32" loglevel="error" threads="2" classpathref="cp">
+            <fileset dir="${src.java}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${src.test}">
+                <include name="**/*.java"/>
+            </fileset>
+        </jalopy>
+    </target>
+
+</project>
