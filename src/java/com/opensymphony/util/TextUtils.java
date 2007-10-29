@@ -479,6 +479,7 @@ public class TextUtils {
      */
     public final static String hyperlink(String text, String target) {
         text = noNull(text);
+
         StringBuffer sb = new StringBuffer((int) (text.length() * 1.1));
         sb.append(text);
         linkEmail(sb);
@@ -682,120 +683,8 @@ public class TextUtils {
         StringBuffer str = new StringBuffer((int) (string.length() * 1.05));
         str.append(string);
         linkEmail(str);
+
         return str.toString();
-    }
-
-    private final static void linkEmail(StringBuffer str) {
-        int lastEndIndex = -1; //Store the index position of the end char of last email address found...
-
-main:
-        while (true) {
-            // get index of '@'...
-            int atIndex = str.indexOf("@", lastEndIndex + 1);
-
-            if (atIndex == -1) {
-                break;
-            } else {
-                //Get the whole email address...
-                //Get the part before '@' by moving backwards and taking each character
-                //until we encounter an invalid URL char...
-                String partBeforeAt = "";
-                int linkStartIndex = atIndex;
-                boolean reachedStart = false;
-
-                while (!reachedStart) {
-                    linkStartIndex--;
-
-                    if (linkStartIndex < 0) {
-                        reachedStart = true;
-                    } else {
-                        char c = str.charAt(linkStartIndex);
-
-                        //if we find these chars in an email, then it's part of a url, so lets leave it alone
-                        //Are there any other chars we should abort email checking for??
-                        if ((c == '?') || (c == '&') || (c == '=') || (c == '/') || (c == '%')) {
-                            lastEndIndex = atIndex + 1;
-
-                            continue main;
-                        }
-
-                        if (UrlUtils.isValidEmailChar(c)) {
-                            partBeforeAt = c + partBeforeAt;
-                        } else {
-                            reachedStart = true;
-                        }
-                    }
-                }
-
-                //Increment linkStartIndex back by 1 to reflect the real starting index of the
-                //email address...
-                linkStartIndex++;
-
-                //Get the part after '@' by doing pretty much the same except moving
-                //forward instead of backwards.
-                String partAfterAt = "";
-                int linkEndIndex = atIndex;
-                boolean reachedEnd = false;
-
-                while (!reachedEnd) {
-                    linkEndIndex++;
-
-                    if (linkEndIndex == str.length()) {
-                        reachedEnd = true;
-                    } else {
-                        char c = str.charAt(linkEndIndex);
-
-                        if (UrlUtils.isValidEmailChar(c)) {
-                            partAfterAt += c;
-                        } else {
-                            reachedEnd = true;
-                        }
-                    }
-                }
-
-                //Decrement linkEndIndex back by 1 to reflect the real ending index of the
-                //email address...
-                linkEndIndex--;
-
-                //Reassemble the whole email address...
-                String emailStr = partBeforeAt + '@' + partAfterAt;
-
-                //If the last chars of emailStr is a '.', ':', '-', '/' or '~' then we exclude those chars.
-                //The '.' at the end could be just a fullstop to a sentence and we don't want
-                //that to be part of an email address (which would then be invalid).
-                //Pretty much the same for the other symbols - we don't want them at the end of any email
-                //address cos' this would stuff the address up.
-                while (true) {
-                    char lastChar = emailStr.charAt(emailStr.length() - 1);
-
-                    if ((lastChar == '.') || (lastChar == ':') || (lastChar == '-') || (lastChar == '/') || (lastChar == '~')) {
-                        emailStr = emailStr.substring(0, emailStr.length() - 1);
-                        linkEndIndex--;
-                    } else {
-                        break;
-                    }
-                }
-
-                //Verify if email is valid...
-                if (verifyEmail(emailStr)) {
-                    //Construct the hyperlink for the email address...
-                    String emailLink = "<a href='mailto:" + emailStr + "'>" + emailStr + "</a>";
-
-                    //Take the part of the str before the email address, the part after, and add
-                    //the emailLink between those two parts, so that in effect the original email
-                    //address is replaced by a hyperlink to it...
-                    str.replace(linkStartIndex, linkEndIndex + 1, emailLink);
-
-                    //Set lastEndIndex to reflect the position of the end of emailLink
-                    //within the whole string...
-                    lastEndIndex = (linkStartIndex - 1) + emailLink.length();
-                } else {
-                    //lastEndIndex is different from the one above cos' there's no
-                    //<a href...> tags added...
-                    lastEndIndex = (linkStartIndex - 1) + emailStr.length();
-                }
-            }
-        }
     }
 
     /**
@@ -818,158 +707,8 @@ main:
         StringBuffer sb = new StringBuffer((int) (str.length() * 1.05));
         sb.append(str);
         linkURL(sb, target);
+
         return sb.toString();
-    }
-
-    private final static void linkURL(StringBuffer str, String target) {
-        String urlToDisplay;
-
-        int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
-
-        String targetString = ((target == null) || (target.trim().length() == 0)) ? "" : (" target=\"" + target.trim() + '\"');
-
-        while (true) {
-            int linkStartIndex = getStartUrl(str, lastEndIndex);
-
-            //if no more links found - then end the loop
-            if (linkStartIndex == -1) {
-                break;
-            } else {
-                //Get the whole URL...
-                //We move forward and add each character to the URL string until we encounter
-                //an invalid URL character (we assume that the URL ends there).
-                int linkEndIndex = linkStartIndex;
-                String urlStr = "";
-
-                while (true) {
-                    // if char at linkEndIndex is '&' then we look at the next 4 chars
-                    // to see if they make up "&amp;" altogether. This is the html coded
-                    // '&' and will pretty much stuff up an otherwise valid link becos of the ';'.
-                    // We therefore have to remove it before proceeding...
-                    if (str.charAt(linkEndIndex) == '&') {
-                        if (((linkEndIndex + 6) <= str.length()) && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
-                            break;
-                        } else if (((linkEndIndex + 5) <= str.length()) && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
-                            str.replace(linkEndIndex, linkEndIndex + 5, "&");
-                        }
-                    }
-
-                    if (UrlUtils.isValidURLChar(str.charAt(linkEndIndex))) {
-                        urlStr += str.charAt(linkEndIndex);
-                        linkEndIndex++;
-
-                        if (linkEndIndex == str.length()) { //Reached end of str...
-
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                //if the characters before the linkStart equal 'href="' then don't link the url - CORE-44
-                if (linkStartIndex >= 6) { //6 = "href\"".length()
-
-                    String prefix = str.substring(linkStartIndex - 6, linkStartIndex);
-
-                    if ("href=\"".equals(prefix)) {
-                        lastEndIndex = linkEndIndex;
-
-                        continue;
-                    }
-                }
-
-                //if the characters after the linkEnd are '</a>' then this url is probably already linked - CORE-44
-                if (str.length() >= (linkEndIndex + 4)) { //4 = "</a>".length()
-
-                    String suffix = str.substring(linkEndIndex, linkEndIndex + 4);
-
-                    if ("</a>".equals(suffix)) {
-                        lastEndIndex = linkEndIndex + 4;
-
-                        continue;
-                    }
-                }
-
-                //Decrement linkEndIndex back by 1 to reflect the real ending index position of the URL...
-                linkEndIndex--;
-
-                //If the last chars of urlStr is a '.', ':', '-', '/' or '~' then we exclude those chars.
-                //The '.' at the end could be just a fullstop to a sentence and we don't want
-                //that to be part of an url (which would then be invalid).
-                //Pretty much the same for the other symbols - we don't want them at the end of any url
-                //cos' this would stuff the url up.
-                while (true) {
-                    char lastChar = urlStr.charAt(urlStr.length() - 1);
-
-                    if ((lastChar == '.') || (lastChar == ':') || (lastChar == '-') || (lastChar == '~')) {
-                        urlStr = urlStr.substring(0, urlStr.length() - 1);
-                        linkEndIndex--;
-                    } else {
-                        break;
-                    }
-                }
-
-                //if the URL had a '(' before it, and has a ')' at the end, trim the last ')' from the url
-                //ie '(www.opensymphony.com)' => '(<a href="http://www.openymphony.com/">www.opensymphony.com</a>)'
-                char lastChar = urlStr.charAt(urlStr.length() - 1);
-
-                if (lastChar == ')') {
-                    if ((linkStartIndex > 0) && ('(' == (str.charAt(linkStartIndex - 1)))) {
-                        urlStr = urlStr.substring(0, urlStr.length() - 1);
-                        linkEndIndex--;
-                    }
-                } else if (lastChar == '\'') {
-                    if ((linkStartIndex > 0) && ('\'' == (str.charAt(linkStartIndex - 1)))) {
-                        urlStr = urlStr.substring(0, urlStr.length() - 1);
-                        linkEndIndex--;
-                    }
-                }
-                //perhaps we ended with '&gt;', '&lt;' or '&quot;'
-                //We need to strip these
-                //ie '&quot;www.opensymphony.com&quot;' => '&quot;<a href="http://www.openymphony.com/">www.opensymphony.com</a>&quot;'
-                //ie '&lt;www.opensymphony.com&gt;' => '&lt;<a href="http://www.openymphony.com/">www.opensymphony.com</a>&gt;'
-                else if (lastChar == ';') {
-                    // 6 = "&quot;".length()
-                    if ((urlStr.length() > 6) && "&quot;".equalsIgnoreCase(urlStr.substring(urlStr.length() - 6))) {
-                        urlStr = urlStr.substring(0, urlStr.length() - 6);
-                        linkEndIndex -= 6;
-                    }
-                    // 4 = "&lt;".length()  || "&gt;".length()
-                    else if (urlStr.length() > 4) {
-                        final String endingStr = urlStr.substring(urlStr.length() - 4);
-
-                        if ("&lt;".equalsIgnoreCase(endingStr) || "&gt;".equalsIgnoreCase(endingStr)) {
-                            urlStr = urlStr.substring(0, urlStr.length() - 4);
-                            linkEndIndex -= 4;
-                        }
-                    }
-                }
-
-                // we got the URL string, now we validate it and convert it into a hyperlink...
-                urlToDisplay = htmlEncode(urlStr);
-
-                if (urlStr.toLowerCase().startsWith("www.")) {
-                    urlStr = "http://" + urlStr;
-                }
-
-                if (UrlUtils.verifyHierachicalURI(urlStr)) {
-                    //Construct the hyperlink for the url...
-                    String urlLink = "<a href=\"" + urlStr + '\"' + targetString + '>' + urlToDisplay + "</a>";
-
-                    //Remove the original urlStr from str and put urlLink there instead...
-                    str.replace(linkStartIndex, linkEndIndex + 1, urlLink);
-
-                    //Set lastEndIndex to reflect the position of the end of urlLink
-                    //within the whole string...
-                    lastEndIndex = (linkStartIndex - 1) + urlLink.length();
-                } else {
-                    //lastEndIndex is different from the one above cos' there's no
-                    //<a href...> tags added...
-                    lastEndIndex = (linkStartIndex - 1) + urlStr.length();
-                }
-            }
-        }
     }
 
     /**
@@ -1561,6 +1300,267 @@ main:
         }
 
         return Math.min(schemeIndex, wwwIndex);
+    }
+
+    private final static void linkEmail(StringBuffer str) {
+        int lastEndIndex = -1; //Store the index position of the end char of last email address found...
+
+main: 
+        while (true) {
+            // get index of '@'...
+            int atIndex = str.indexOf("@", lastEndIndex + 1);
+
+            if (atIndex == -1) {
+                break;
+            } else {
+                //Get the whole email address...
+                //Get the part before '@' by moving backwards and taking each character
+                //until we encounter an invalid URL char...
+                String partBeforeAt = "";
+                int linkStartIndex = atIndex;
+                boolean reachedStart = false;
+
+                while (!reachedStart) {
+                    linkStartIndex--;
+
+                    if (linkStartIndex < 0) {
+                        reachedStart = true;
+                    } else {
+                        char c = str.charAt(linkStartIndex);
+
+                        //if we find these chars in an email, then it's part of a url, so lets leave it alone
+                        //Are there any other chars we should abort email checking for??
+                        if ((c == '?') || (c == '&') || (c == '=') || (c == '/') || (c == '%')) {
+                            lastEndIndex = atIndex + 1;
+
+                            continue main;
+                        }
+
+                        if (UrlUtils.isValidEmailChar(c)) {
+                            partBeforeAt = c + partBeforeAt;
+                        } else {
+                            reachedStart = true;
+                        }
+                    }
+                }
+
+                //Increment linkStartIndex back by 1 to reflect the real starting index of the
+                //email address...
+                linkStartIndex++;
+
+                //Get the part after '@' by doing pretty much the same except moving
+                //forward instead of backwards.
+                String partAfterAt = "";
+                int linkEndIndex = atIndex;
+                boolean reachedEnd = false;
+
+                while (!reachedEnd) {
+                    linkEndIndex++;
+
+                    if (linkEndIndex == str.length()) {
+                        reachedEnd = true;
+                    } else {
+                        char c = str.charAt(linkEndIndex);
+
+                        if (UrlUtils.isValidEmailChar(c)) {
+                            partAfterAt += c;
+                        } else {
+                            reachedEnd = true;
+                        }
+                    }
+                }
+
+                //Decrement linkEndIndex back by 1 to reflect the real ending index of the
+                //email address...
+                linkEndIndex--;
+
+                //Reassemble the whole email address...
+                String emailStr = partBeforeAt + '@' + partAfterAt;
+
+                //If the last chars of emailStr is a '.', ':', '-', '/' or '~' then we exclude those chars.
+                //The '.' at the end could be just a fullstop to a sentence and we don't want
+                //that to be part of an email address (which would then be invalid).
+                //Pretty much the same for the other symbols - we don't want them at the end of any email
+                //address cos' this would stuff the address up.
+                while (true) {
+                    char lastChar = emailStr.charAt(emailStr.length() - 1);
+
+                    if ((lastChar == '.') || (lastChar == ':') || (lastChar == '-') || (lastChar == '/') || (lastChar == '~')) {
+                        emailStr = emailStr.substring(0, emailStr.length() - 1);
+                        linkEndIndex--;
+                    } else {
+                        break;
+                    }
+                }
+
+                //Verify if email is valid...
+                if (verifyEmail(emailStr)) {
+                    //Construct the hyperlink for the email address...
+                    String emailLink = "<a href='mailto:" + emailStr + "'>" + emailStr + "</a>";
+
+                    //Take the part of the str before the email address, the part after, and add
+                    //the emailLink between those two parts, so that in effect the original email
+                    //address is replaced by a hyperlink to it...
+                    str.replace(linkStartIndex, linkEndIndex + 1, emailLink);
+
+                    //Set lastEndIndex to reflect the position of the end of emailLink
+                    //within the whole string...
+                    lastEndIndex = (linkStartIndex - 1) + emailLink.length();
+                } else {
+                    //lastEndIndex is different from the one above cos' there's no
+                    //<a href...> tags added...
+                    lastEndIndex = (linkStartIndex - 1) + emailStr.length();
+                }
+            }
+        }
+    }
+
+    private final static void linkURL(StringBuffer str, String target) {
+        String urlToDisplay;
+
+        int lastEndIndex = -1; //Stores the index position, within the whole string, of the ending char of the last URL found.
+
+        String targetString = ((target == null) || (target.trim().length() == 0)) ? "" : (" target=\"" + target.trim() + '\"');
+
+        while (true) {
+            int linkStartIndex = getStartUrl(str, lastEndIndex);
+
+            //if no more links found - then end the loop
+            if (linkStartIndex == -1) {
+                break;
+            } else {
+                //Get the whole URL...
+                //We move forward and add each character to the URL string until we encounter
+                //an invalid URL character (we assume that the URL ends there).
+                int linkEndIndex = linkStartIndex;
+                String urlStr = "";
+
+                while (true) {
+                    // if char at linkEndIndex is '&' then we look at the next 4 chars
+                    // to see if they make up "&amp;" altogether. This is the html coded
+                    // '&' and will pretty much stuff up an otherwise valid link becos of the ';'.
+                    // We therefore have to remove it before proceeding...
+                    if (str.charAt(linkEndIndex) == '&') {
+                        if (((linkEndIndex + 6) <= str.length()) && "&quot;".equals(str.substring(linkEndIndex, linkEndIndex + 6))) {
+                            break;
+                        } else if (((linkEndIndex + 5) <= str.length()) && "&amp;".equals(str.substring(linkEndIndex, linkEndIndex + 5))) {
+                            str.replace(linkEndIndex, linkEndIndex + 5, "&");
+                        }
+                    }
+
+                    if (UrlUtils.isValidURLChar(str.charAt(linkEndIndex))) {
+                        urlStr += str.charAt(linkEndIndex);
+                        linkEndIndex++;
+
+                        if (linkEndIndex == str.length()) { //Reached end of str...
+
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                //if the characters before the linkStart equal 'href="' then don't link the url - CORE-44
+                if (linkStartIndex >= 6) { //6 = "href\"".length()
+
+                    String prefix = str.substring(linkStartIndex - 6, linkStartIndex);
+
+                    if ("href=\"".equals(prefix)) {
+                        lastEndIndex = linkEndIndex;
+
+                        continue;
+                    }
+                }
+
+                //if the characters after the linkEnd are '</a>' then this url is probably already linked - CORE-44
+                if (str.length() >= (linkEndIndex + 4)) { //4 = "</a>".length()
+
+                    String suffix = str.substring(linkEndIndex, linkEndIndex + 4);
+
+                    if ("</a>".equals(suffix)) {
+                        lastEndIndex = linkEndIndex + 4;
+
+                        continue;
+                    }
+                }
+
+                //Decrement linkEndIndex back by 1 to reflect the real ending index position of the URL...
+                linkEndIndex--;
+
+                // If the last char of urlStr is a '.' we exclude it. It is most likely a full stop and
+                // we don't want that to be part of an url.
+                while (true) {
+                    char lastChar = urlStr.charAt(urlStr.length() - 1);
+
+                    if (lastChar == '.') {
+                        urlStr = urlStr.substring(0, urlStr.length() - 1);
+                        linkEndIndex--;
+                    } else {
+                        break;
+                    }
+                }
+
+                //if the URL had a '(' before it, and has a ')' at the end, trim the last ')' from the url
+                //ie '(www.opensymphony.com)' => '(<a href="http://www.openymphony.com/">www.opensymphony.com</a>)'
+                char lastChar = urlStr.charAt(urlStr.length() - 1);
+
+                if (lastChar == ')') {
+                    if ((linkStartIndex > 0) && ('(' == (str.charAt(linkStartIndex - 1)))) {
+                        urlStr = urlStr.substring(0, urlStr.length() - 1);
+                        linkEndIndex--;
+                    }
+                } else if (lastChar == '\'') {
+                    if ((linkStartIndex > 0) && ('\'' == (str.charAt(linkStartIndex - 1)))) {
+                        urlStr = urlStr.substring(0, urlStr.length() - 1);
+                        linkEndIndex--;
+                    }
+                }
+                //perhaps we ended with '&gt;', '&lt;' or '&quot;'
+                //We need to strip these
+                //ie '&quot;www.opensymphony.com&quot;' => '&quot;<a href="http://www.openymphony.com/">www.opensymphony.com</a>&quot;'
+                //ie '&lt;www.opensymphony.com&gt;' => '&lt;<a href="http://www.openymphony.com/">www.opensymphony.com</a>&gt;'
+                else if (lastChar == ';') {
+                    // 6 = "&quot;".length()
+                    if ((urlStr.length() > 6) && "&quot;".equalsIgnoreCase(urlStr.substring(urlStr.length() - 6))) {
+                        urlStr = urlStr.substring(0, urlStr.length() - 6);
+                        linkEndIndex -= 6;
+                    }
+                    // 4 = "&lt;".length()  || "&gt;".length()
+                    else if (urlStr.length() > 4) {
+                        final String endingStr = urlStr.substring(urlStr.length() - 4);
+
+                        if ("&lt;".equalsIgnoreCase(endingStr) || "&gt;".equalsIgnoreCase(endingStr)) {
+                            urlStr = urlStr.substring(0, urlStr.length() - 4);
+                            linkEndIndex -= 4;
+                        }
+                    }
+                }
+
+                // we got the URL string, now we validate it and convert it into a hyperlink...
+                urlToDisplay = htmlEncode(urlStr);
+
+                if (urlStr.toLowerCase().startsWith("www.")) {
+                    urlStr = "http://" + urlStr;
+                }
+
+                if (UrlUtils.verifyHierachicalURI(urlStr)) {
+                    //Construct the hyperlink for the url...
+                    String urlLink = "<a href=\"" + urlStr + '\"' + targetString + '>' + urlToDisplay + "</a>";
+
+                    //Remove the original urlStr from str and put urlLink there instead...
+                    str.replace(linkStartIndex, linkEndIndex + 1, urlLink);
+
+                    //Set lastEndIndex to reflect the position of the end of urlLink
+                    //within the whole string...
+                    lastEndIndex = (linkStartIndex - 1) + urlLink.length();
+                } else {
+                    //lastEndIndex is different from the one above cos' there's no
+                    //<a href...> tags added...
+                    lastEndIndex = (linkStartIndex - 1) + urlStr.length();
+                }
+            }
+        }
     }
 
     /**

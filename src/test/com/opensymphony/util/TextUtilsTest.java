@@ -76,6 +76,11 @@ public class TextUtilsTest extends TestCase {
 
     //~ Methods ////////////////////////////////////////////////////////////////
 
+    public void testBr() {
+        assertEquals("abc<br/>\ndef", TextUtils.br("abc\ndef"));
+        assertEquals("abc<br/>\n<br/>\ndef", TextUtils.br("abc\n\ndef"));
+    }
+
     public void testCloseTags() {
         //		assertEquals( "", TextUtils.closeTags(""));
         //		assertEquals( "test", TextUtils.closeTags("test"));
@@ -115,6 +120,10 @@ public class TextUtilsTest extends TestCase {
         assertEquals("&quot;test&quot;", TextUtils.htmlEncode("\"test\""));
         assertEquals("\u0445test\u0445", TextUtils.htmlEncode("\u0445test\u0445"));
         assertEquals("\u0445\u0642test\u0445", TextUtils.htmlEncode("\u0445\u0642test\u0445"));
+
+        String input = "http://www.xxx.com/getStuff?stuff_id=12&readonly=true";
+        String expectedResult = "http://www.xxx.com/getStuff?stuff_id=12&amp;readonly=true";
+        assertEquals(expectedResult, TextUtils.htmlEncode(input));
     }
 
     public void testHyperLink() {
@@ -210,6 +219,30 @@ public class TextUtilsTest extends TestCase {
 
         //problem with the whole string not being linked if the last url is 'http://' - CORE-65
         assertEquals("<a href=\"http://testUrl\">http://testUrl</a> http:// ", TextUtils.linkURL("http://testUrl http:// "));
+
+        // colon is legal in the path component
+        _testLinkUrl("http://foo.com/bar:baz");
+
+        // dot on the end of a url is interpreted as a full stop for the sentence.
+        assertEquals("Check out <a href=\"http://www.somewhere.com/foobar\">http://www.somewhere.com/foobar</a>.", TextUtils.linkURL("Check out http://www.somewhere.com/foobar."));
+
+        // this is a way of putting the dot on the end of a url
+        assertEquals("Check out '<a href=\"http://www.somewhere.com/url-ending-in-dot.\">http://www.somewhere.com/url-ending-in-dot.</a>'", TextUtils.linkURL("Check out 'http://www.somewhere.com/url-ending-in-dot.'"));
+
+        // full stop should be removed
+        assertEquals("Check out '<a href=\"http://www.somewhere.com\">http://www.somewhere.com</a>'.", TextUtils.linkURL("Check out 'http://www.somewhere.com'."));
+
+        // CORE-76 trailing legal URL characters ':' '-' '~' should be included unlike "." which is still guessed to be a full stop
+        _testLinkUrl("http://foo.com/bar:");
+        _testLinkUrl("http://something.com/ending-in-minus-");
+        _testLinkUrl("http://something.com/ending-in-tilda~");
+        assertEquals("<a href=\"http://something.com/ending-in-minus-\">http://something.com/ending-in-minus-</a>", TextUtils.linkURL("http://something.com/ending-in-minus-"));
+        assertEquals("<a href=\"http://something.com/ending-in-tilda~\">http://something.com/ending-in-tilda~</a>", TextUtils.linkURL("http://something.com/ending-in-tilda~"));
+
+        // TODO: what about making these work?
+        //        assertEquals("(yep <a href=\"http://www.opensymphony.com/\">http://www.opensymphony.com/</a>)", TextUtils.linkURL("(yep http://www.opensymphony.com/)")); //brackets test
+        //        assertEquals("(yep <a href=\"http://www.opensymphony.com\">http://www.opensymphony.com</a>)", TextUtils.linkURL("(yep http://www.opensymphony.com)")); //brackets test
+        //        assertEquals("(see <a href=\"http://something.com/ending-in-minus-\">http://something.com/ending-in-minus-</a>)", TextUtils.linkURL("(see http://something.com/ending-in-minus-)"));
     }
 
     public void testNulls() {
@@ -250,6 +283,10 @@ public class TextUtilsTest extends TestCase {
         String input = "<foo rdf:datatype=\"http://abc.com\">12;</foo>";
         String expectedResult = "&lt;foo rdf:datatype=&quot;<a href=\"http://abc.com\">http://abc.com</a>&quot;&gt;12;&lt;/foo&gt;";
         assertEquals(expectedResult, TextUtils.plainTextToHtml(input));
+
+        input = "http://www.xxx.com/getStuff?stuff_id=12&readonly=true";
+        expectedResult = "<a href=\"http://www.xxx.com/getStuff?stuff_id=12&readonly=true\">http://www.xxx.com/getStuff?stuff_id=12&amp;readonly=true</a>";
+        assertEquals(expectedResult, TextUtils.plainTextToHtml(input));
     }
 
     public void testVerifyEmail() {
@@ -276,11 +313,6 @@ public class TextUtilsTest extends TestCase {
         _testVerifyUrl("http", false);
         _testVerifyUrl("http://abc.com:80", true);
         _testVerifyUrl(null, false);
-    }
-
-    public void testBr() {
-        assertEquals("abc<br/>\ndef", TextUtils.br("abc\ndef"));
-        assertEquals("abc<br/>\n<br/>\ndef", TextUtils.br("abc\n\ndef"));
     }
 
     private boolean _compareDates(Date a, Date b) {
