@@ -1544,7 +1544,9 @@ main:
                     urlStr = "http://" + urlStr;
                 }
 
-                if (UrlUtils.verifyHierachicalURI(urlStr)) {
+                if (UrlUtils.verifyHierachicalURI(urlStr, new String[] {
+                                "javascript"
+                            })) {
                     //Construct the hyperlink for the url...
                     String urlLink = "<a href=\"" + urlStr + '\"' + targetString + '>' + urlToDisplay + "</a>";
 

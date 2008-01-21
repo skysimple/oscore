@@ -104,6 +104,19 @@ public class UrlUtils {
      * Validate a URL according to RFC 2396
      */
     public static boolean verifyHierachicalURI(String uri) {
+        return verifyHierachicalURI(uri, null);
+    }
+
+    /**
+     * Validate an URI according to RFC 2396.  It will use schemesConsideredInvalid to indicate that
+     * URI schemes are considered invalid.  For example javascript: might be considered harmful
+     * in some cases.
+     *
+     * @param uri                      the URI string to check
+     * @param schemesConsideredInvalid an array of Strings of URI schemes considered invalid.  Accepts null, matches case insensitive.
+     * @return true if the URI is valid according to RFC 2396 and does not have one of the invalid  schemes
+     */
+    public static boolean verifyHierachicalURI(String uri, String[] schemesConsideredInvalid) {
         if ((uri == null) || (uri.length() < SCHEME_URL.length())) {
             return false;
         }
@@ -114,8 +127,21 @@ public class UrlUtils {
             return false;
         }
 
-        if (!isValidScheme(uri.substring(0, schemeUrlIndex))) {
+        final String scheme = uri.substring(0, schemeUrlIndex);
+
+        if (!isValidScheme(scheme)) {
             return false;
+        }
+
+        // ok check if the caller doesnt want this scheme
+        if (schemesConsideredInvalid != null) {
+            for (int i = 0; i < schemesConsideredInvalid.length; i++) {
+                String invalidScheme = schemesConsideredInvalid[i];
+
+                if (scheme.equalsIgnoreCase(invalidScheme)) {
+                    return false;
+                }
+            }
         }
 
         //ensure that the URL has at least one character after '://'

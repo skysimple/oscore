@@ -289,6 +289,16 @@ public class TextUtilsTest extends TestCase {
         assertEquals(expectedResult, TextUtils.plainTextToHtml(input));
     }
 
+    public void testPlainTextToHtmlNoJavaScriptByDefault() throws Exception {
+        String input = "Here is some text that should not encode the javascript://link in anchor tags";
+        String expected = input;
+        assertEquals(expected, TextUtils.plainTextToHtml(input));
+
+        input = "Here is some text that should not encode the javascript://link in anchor tags but it ok for this http://ok to be anchored";
+        expected = "Here is some text that should not encode the javascript://link in anchor tags but it ok for this <a href=\"http://ok\">http://ok</a> to be anchored";
+        assertEquals(expected, TextUtils.plainTextToHtml(input));
+    }
+
     public void testVerifyEmail() {
         _testVerifyEmail("joe@truemesh.com", true);
         _testVerifyEmail("asf@aol.com", true);
