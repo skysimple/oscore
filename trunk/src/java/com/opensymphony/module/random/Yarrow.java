@@ -127,7 +127,11 @@ public final class Yarrow extends Random {
 
     static {
         try {
-            File file = new File(new File(System.getProperty("java.io.tmpdir")), "prng.seed." + System.currentTimeMillis());
+            File dir = new File(System.getProperty("java.io.tmpdir"));
+            File file = new File(dir, "prng.seed." + System.currentTimeMillis());
+            if(file.exists()) {
+              file = new File(dir, "prng.seed." + System.currentTimeMillis() + '.' + new Random().nextInt(10));
+            }
             seedfile = file.toString();
             file.deleteOnExit();
         } catch (Throwable t) {
