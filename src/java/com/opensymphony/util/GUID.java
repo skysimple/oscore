@@ -4,7 +4,6 @@
  */
 package com.opensymphony.util;
 
-import com.opensymphony.module.random.Yarrow;
 
 /* ====================================================================
  * The OpenSymphony Software License, Version 1.1
@@ -58,9 +57,15 @@ import com.opensymphony.module.random.Yarrow;
  */
 import java.math.BigInteger;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 
 /**
  * Convenience object for generating GUIDs.
+ * Uses the SHA1PRNG algorithm if available.
+ * If unavailable, it leaves this up to the JRE to provide a default.
+ * See http://java.sun.com/j2se/1.4.2/docs/api/java/security/SecureRandom.html for more details.
  *
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @version $Revision$
@@ -68,7 +73,18 @@ import java.math.BigInteger;
 public final class GUID {
     //~ Static fields/initializers /////////////////////////////////////////////
 
-    private static Yarrow rnd = new Yarrow();
+    private static SecureRandom rnd;
+
+    static {
+        try {
+            rnd = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            rnd = new SecureRandom(); //Use default if prefered provider is unavailable
+        }
+
+        byte[] seed = rnd.generateSeed(64);
+        rnd.setSeed(seed);
+    }
 
     //~ Methods ////////////////////////////////////////////////////////////////
 
@@ -79,12 +95,6 @@ public final class GUID {
         return guid.substring(0, 8) + '-' + guid.substring(8, 12) + '-' + guid.substring(12, 16) + '-' + guid.substring(16, 20) + '-' + guid.substring(20);
     }
 
-    /**
-    * Generates a unique ID based on the Yarrow secure random
-    * number generator. Yarrow preserves its seed in <code>$java.io.tmpdir/seedfile</code>,
-    * so the chances of getting a collision are amazingly, amazingly
-    * small. Even on separate machines, this shouldn't yield matches.
-    */
     public static String generateGUID() {
         return new BigInteger(165, rnd).toString(36).toUpperCase();
     }
