@@ -55,7 +55,8 @@ package com.opensymphony.module.random;
  * SUCH DAMAGE.
  * ====================================================================
  */
-import java.math.BigInteger;
+
+import com.opensymphony.util.GUID;
 
 
 /**
@@ -68,11 +69,8 @@ public class Test {
     //~ Methods ////////////////////////////////////////////////////////////////
 
     public static void main(String[] args) {
-        Yarrow rnd = new Yarrow();
-
         for (int i = 1; i <= 100; i++) {
-            BigInteger bi = new BigInteger(160, rnd);
-            System.out.println(bi.toString(36).toUpperCase());
+            System.out.println("guid = " + GUID.generateFormattedGUID());
         }
     }
 }
