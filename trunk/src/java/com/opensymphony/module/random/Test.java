@@ -55,7 +55,6 @@ package com.opensymphony.module.random;
  * SUCH DAMAGE.
  * ====================================================================
  */
-
 import com.opensymphony.util.GUID;
 
 
